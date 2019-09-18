@@ -1,0 +1,16 @@
+
+<div aria-hidden="true" aria-labelledby="exampleModalCenterTitle" class="modal fade" id="exampleModalCenter" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="text-center my-2">
+          <div class="logo">
+            <i class="fa fa-cogs fa-2x"></i>
+          </div>
+          <span class="h2">Accès Admin</span>
+        </div>
+        {{ render(controller('App\\Controller\\LoginController::login')) }}
+      </div>
+    </div>
+  </div>
+</div>

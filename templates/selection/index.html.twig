@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Listes des sélections{% endblock %}
+
+{% block body %}
+    {% include 'headers/_jumbo.html.twig' with {jumboTitle:'Liste des sélections ',jumboText:""} %}
+
+    {% if is_granted('ROLE_ADMIN') %}
+    <div class="row justify-content-center text-center">
+        <div class="col-md-2  mt-2 mb-5">
+            <a href="{{ path('selection_new') }}"><button class="btn btn-primary"><i class="fa fa-plus"></i> Créer</button></a>
+        </div>
+    </div>
+    {% else %}
+    {% endif %}
+    <table class="table">
+        <thead>
+            <tr>
+                {% if is_granted('ROLE_MASTER') %}
+                    <th>Pré-selection</th>
+                {% else %}
+                {% endif %}
+                <th>Titre</th>
+                <th>Date de début</th>
+                <th>Date de clôture</th>
+                <th>Adresse</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for selection in selections %}
+
+                <tr>
+                    {% if is_granted('ROLE_MASTER') %}
+                    <td>
+
+                            {% if selection.status == true %}
+                                <a href="{{ path('selectionStatus', {'id':selection.id}) }}" class="selectionStatus">
+                                    <label  class="toggle">
+                                        <input class="selectionInput" id="selectionInput" type="radio" name="radio-toggle" checked="checked">
+                                        <i data-swchon-text="ON" data-swchoff-text="OFF"></i>
+                                    </label>
+                                </a>
+                            {% else %}
+                                <a href="{{ path('selectionStatus', {'id':selection.id}) }}" class="selectionStatus">
+                                    <label  class="toggle">
+                                        <input class="selectionInput" id="selectionInput" type="radio" name="radio-toggle">
+                                        <i data-swchon-text="ON" data-swchoff-text="OFF"></i>
+                                    </label>
+                                </a>
+                            {% endif %}
+                    </td>
+                    {% else %}
+                    {% endif %}
+                    <td>{{ selection.title }}</td>
+                    <td>{{ selection.dateStart ? selection.dateStart|date('d/m/Y') : '' }}</td>
+                    <td>{{ selection.dateEnd ? selection.dateEnd|date('d/m/Y') : '' }}</td>
+                    <td>{{ selection.address }}<br>{{ selection.postCode }} {{ selection.city }}</td>
+                    <td>
+                        <a href="{{ path('selection_show', {'id': selection.id}) }}"><button class="btn btn-success"><i class="fa fa-eye"></i></button></a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('selection_edit', {'id': selection.id}) }}"><button class="btn btn-warning"><i class="fa fa-pencil-square-o"></i></button></a>
+                        {{ include('selection/_delete_form.html.twig') }}
+
+                        {% else %}
+                        {% endif %}
+                    </td>
+                </tr>
+
+
+            {% else %}
+            <tr>
+                <td colspan="8">Pas de selection enregistrée</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+{% block javascripts %}
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        function onClickBtnLike(event){
+            event.preventDefault();
+
+            let href = this.querySelector('.toggle').parentNode;
+            let url = this.href;
+
+
+            axios.get(url).then(function(response){
+
+                href.innerHTML = '<label class="toggle"><input class="selectionInput" id="selectionInput" type="radio" name="radio-toggle" checked="checked"><i data-swchon-text="ON" data-swchoff-text="OFF"></i></label>';
+
+            }).catch(function(error){
+                if(error.response.status === 403){
+                    window.alert("Vous ne pouvez pas aactiver cette selection si vous n'êtes pas admin ou master !");
+                }else{
+                    window.alert("une erreur s'est produite, réessayer plus tard !");
+                }
+            });
+        }
+
+        document.querySelectorAll('a.selectionStatus').forEach(function(link){
+            link.addEventListener('click', onClickBtnLike);
+        })
+    </script>
+{% endblock %}

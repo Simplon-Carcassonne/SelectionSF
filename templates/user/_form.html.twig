@@ -1,0 +1,10 @@
+{{ form_start(form) }}
+{% if form.vars.errors is not empty %}
+        {# errors #}
+        <div class="alert alert-danger">
+          {{ form_errors(form) }}
+        </div>
+      {% endif %}
+    {{ form_widget(form) }}
+    <button class="btn btn-success">{{ button_label|default('Sauvegarder') }}</button>
+{{ form_end(form) }}

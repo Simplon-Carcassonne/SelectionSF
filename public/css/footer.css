@@ -1,0 +1,23 @@
+footer{
+    margin:3% 0 ;
+}
+
+.btn-footer{
+/*(for the footer button)*/
+    border-radius: 50px;
+    width: auto;
+    background-color: rgb(96, 96, 96);
+    box-shadow: 3px 3px 3px #00000050;
+}
+
+
+footer a{
+/*(for the footer link)*/
+    color: white;
+    font-size: 15px;
+}
+
+footer a:hover{
+/*(for the footer link after the mouse flyby)*/
+    color: white;
+}

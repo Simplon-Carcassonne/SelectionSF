@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User{% endblock %}
+
+{% block body %}
+{% include 'headers/_jumbo.html.twig' with {jumboTitle:'utilisateur ',jumboText: user.surname } %}
+
+<table class="table ">
+  <tbody>
+    <tr>
+      <th>Nom/Prénom</th>
+      <td>{{ user.surname }} {{ user.name }} </td>
+    </tr>
+    <tr>
+      <th>Email</th>
+      <td>{{ user.email }}</td>
+    </tr>
+    <tr>
+
+      <th>Role</th>
+      {% if user.roles == ['ROLE_ADMIN'] %}
+      <td class="d-none d-sm-block">Admin</td>
+      {% elseif user.roles == ['ROLE_MASTER'] %}
+      <td class="d-none d-sm-block">Master</td>
+      {% elseif user.roles == ['ROLE_JURY'] %}
+      <td class="d-none d-sm-block">Jury</td>
+      {% else %}
+      <td class="d-none d-sm-block"> user </td>
+      {% endif %}
+
+    </tr>
+  </tbody>
+</table>
+<a href="{{ path('user_edit', {'id': user.id}) }}">
+  <button class="btn btn-warning ">Modifier</button>
+</a>
+{{ include('user/_delete_form.html.twig') }}
+<a href="{{ path('user_index') }}">
+  <button class="btn btn-secondary ">Retour a la liste</button>
+</a>
+
+{% endblock %}

@@ -1,0 +1,14 @@
+<form class="bg-white" id="loginForm" method="post" action="{{ path('app_login') }}">
+    {% if error is defined and error %}
+        <div class="alert alert-danger my-2">
+            {{ error.messageKey | trans(error.messagedata, 'security') }}
+        </div>
+    {% endif %}
+    <label for="inputEmail">Adresse e-mail</label>
+    <input autofocus class="form-control text-info loginfield" id="inputEmail" name="email" required type="email">
+    <br>
+    <label class="" for="inputPassword">Mot de passe</label>
+    <input class="form-control text-info loginfield" id="inputPassword" name="password" required type="password">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+    <button class="btn btn-block bg-red my-5" type="submit">Je me connecte !</button>
+</form>

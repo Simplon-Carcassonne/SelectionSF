@@ -1,0 +1,153 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Candidate{% endblock %}
+
+{% block body %}
+    <h1 class="ml-3 my-3 h1">Candidat {{ candidate.surname }} {{ candidate.name }}</h1>
+    <!-- <a href="{{ path('candidate_index', {'id': candidate.id}) }}">
+        <button class="btn btn-secondary mb-3"><i class="fa fa-arrow-left"></i></button></a>
+        <a href=javascript:history.go(-1)><i class="fa fa-arrow-left"></i> Retour</a> -->
+        <form>
+<input class="btn btn-secondary mb-3" type = "button" value = "Retour"  onclick = "history.back()">
+</form>
+    <div class="col-md-8">
+        <table class="table">
+            <tbody>
+            <tr>
+                <th>Genre</th>
+                <td>{{ candidate.genus }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ candidate.name }}</td>
+            </tr>
+            <tr>
+                <th>Prénom</th>
+                <td>{{ candidate.surname }}</td>
+            </tr>
+            <tr>
+                <th>Date_de_naissance</th>
+                <td>{{ candidate.dateOfBirth ? candidate.dateOfBirth|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Adresse</th>
+                <td>{{ candidate.address }}</td>
+            </tr>
+            <tr>
+                <th>code_postal</th>
+                <td>{{ candidate.postCode }}</td>
+            </tr>
+            <tr>
+                <th>Ville</th>
+                <td>{{ candidate.city }}</td>
+            </tr>
+            <tr>
+                <th>Numéro_de_téléphone</th>
+                <td>{{ candidate.phoneNumber }}</td>
+            </tr>
+            <tr>
+                <th>Adresse_mail</th>
+                <td>{{ candidate.mailAddress }}</td>
+            </tr>
+            <tr>
+                <th>Dev_skills</th>
+                <td>{{ candidate.devSkills }}</td>
+            </tr>
+            <tr>
+                <th>Niveau_scolaire</th>
+                <td>{{ candidate.schoolLevel }}</td>
+            </tr>
+            <tr>
+                <th>Situation</th>
+                <td>{{ candidate.situation }}</td>
+            </tr>
+            <tr>
+                <th>Pays_de_naissance</th>
+                <td>{{ candidate.birthCountry }}</td>
+            </tr>
+            <tr>
+                <th>Nationalité</th>
+                <td>{{ candidate.nationality }}</td>
+            </tr>
+            <tr>
+                <th>Pole_emploi_id</th>
+                <td>{{ candidate.poleEmploiId }}</td>
+            </tr>
+            <tr>
+                <th>Pole_emploi_compensation_date_de_fin</th>
+                <td>{{ candidate.poleEmploiCompensationEndDate ? candidate.poleEmploiCompensationEndDate|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Sécurité_social</th>
+                <td>{{ candidate.socialSecurity }}</td>
+            </tr>
+            <tr>
+                <th>Super-héros</th>
+                <td>{{ candidate.superhero }}</td>
+            </tr>
+            <tr>
+                <th>Hack_experience</th>
+                <td>{{ candidate.hackExperience }}</td>
+            </tr>
+            <tr>
+                <th>School_stopped_year</th>
+                <td>{{ candidate.schoolStoppedYear }}</td>
+            </tr>
+            <tr>
+                <th>Resumé</th>
+                <td>{{ candidate.resume }}</td>
+            </tr>
+            <tr>
+                <th>Niveau_anglais</th>
+                <td>{{ candidate.englishLevel }}</td>
+            </tr>
+            <tr>
+                <th>Motivation</th>
+                <td>{{ candidate.motivation }}</td>
+            </tr>
+            <tr>
+                <th>Un_an_plus_tard</th>
+                <td>{{ candidate.oneYearLater }}</td>
+            </tr>
+            <tr>
+                <th>Sololearn</th>
+                <td>{{ candidate.sololearn }}</td>
+            </tr>
+            <tr>
+                <th>Sololearn_bonus</th>
+                <td>{{ candidate.sololearnBonus ? candidate.sololearnBonus|join(', ') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Disponibilité</th>
+                <td>{{ candidate.disponibility ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>Rémunération</th>
+                <td>{{ candidate.remuneration }}</td>
+            </tr>
+            <tr>
+                <th>Guidance_source</th>
+                <td>{{ candidate.guidanceSource }}</td>
+            </tr>
+            <tr>
+                <th>Préselection</th>
+                <td>{{ candidate.status ? 'Oui' : 'Non' }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="mb-5 row">
+        <a href="{{ path('candidate_index', {'id': candidate.id}) }}">
+            <button class="btn btn-secondary m-3"><i class="fa fa-arrow-left"></i></button>
+        </a>
+        {% if is_granted('ROLE_MASTER') %}
+            <a href="{{ path('candidate_edit', {'id': candidate.id}) }}">
+                <button class="btn btn-warning m-3"><i class="fa fa-pencil-square-o"></i></button>
+            </a>
+            {{ include('candidate/_delete_form.html.twig') }}
+        {% else %}
+
+        {% endif %}
+    </div>
+
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Candidate{% endblock %}
+
+{% block body %}
+    {% include 'headers/_jumbo.html.twig' with {jumboTitle:'Candidat ',jumboText:"Affichage du candidat selectionné"} %}
+    <div class="mr-4 ml-4">
+        <a href="{{ path('candidate_index', {'id': candidate.id}) }}">
+            <button class="btn btn-secondary mb-3"><i class="fa fa-arrow-left"></i></button>
+        </a>
+
+
+
+        <div class="">
+            {{ include('candidate/_form.html.twig', {'button_label': ''}) }}
+            <a href="{{ path('candidate_index', {'id': candidate.id}) }}">
+                <button class="btn btn-secondary m-3"><i class="fa fa-arrow-left"></i></button>
+            </a>
+            {{ include('candidate/_delete_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+
+{% endblock %}

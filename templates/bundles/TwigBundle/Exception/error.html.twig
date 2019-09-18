@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur
+{% endblock %}
+{% block body %}
+
+    {% include 'headers/_jumbo.html.twig' with {jumboTitle:'Vous êtes perdu ?? ',jumboText:"Retournez donc à l'accueil"} %}
+
+    <a href="{{ path('home') }}">
+        <button class="btn btn-block bg-red mb-2" id="BtnToForm">Accueil</button>
+    </a>
+
+    {% endblock %}

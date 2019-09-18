@@ -1,0 +1,127 @@
+@font-face {
+  font-family: Avenir;
+  src: url(../fonts/Avenir.woff2) format("woff2"), url(../fonts/Avenir.woff) format("woff"), url(../fonts/Avenir.ttf) format("truetype");
+}
+
+:root {
+  --mainred: #CC233A;
+  --maingrey: #666;
+  --avenirfont: 'Avenir', sans-serif;
+  --robotofont: 'Roboto', sans-serif;
+}
+
+body, .row, .container-fluid {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+}
+
+hr {
+  margin: 0;
+}
+
+.jumbo{
+
+  margin: 20px 0 20px 0;
+}
+.animation, .jumbo{
+  animation-duration: 3s;
+  animation-name: slidein;
+}
+
+@keyframes slidein {
+  from {
+    margin-left: 100%;
+    width: 300%;
+  }
+
+  to {
+    margin-left: 0%;
+    width: 100%;
+  }
+}
+.wrap {
+  display: flex;
+  background: white;
+  padding: 1rem 1rem 1rem 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 7px 7px 30px -5px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+.title{
+  font-size:1.3em;
+  font-weight: bold;
+}
+
+
+.ico-wrap {
+  margin: auto;
+}
+
+.mbr-iconfont {
+  font-size: 4.5rem !important;
+  color: var( --mainred);
+  margin: 1rem;
+  padding-right: 1rem;
+}
+.vcenter {
+  margin: auto;
+}
+
+.mbr-section-title3 {
+  text-align: left;
+}
+h2 {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.display-5 {
+  font-family: 'Source Sans Pro',sans-serif;
+  font-size: 1.4rem;
+}
+.mbr-bold {
+  font-weight: 700;
+}
+
+p {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  line-height: 25px;
+}
+.display-6 {
+  font-family: 'Source Sans Pro',sans-serif;
+  font-size: 1rem}
+
+  .line{
+
+    text-decoration: underline;
+    text-decoration-color: var( --mainred) ;
+
+  }
+  .number{
+    color: var( --mainred);
+    font-size: 3em;
+    font-weight: bold;
+  }
+  
+  @media (max-width: 900px) {
+    .title {
+      font-size:1em;
+      line-height: 0.8em;
+    }
+    h2{
+      font-size: 0.9em;
+    }
+    .wrap{
+      flex-direction: column;
+    }
+  }
+  @media (max-width: 630px) {
+    .title {
+      font-size:0.8em;
+      line-height: 0.4em;
+    }
+    h2, p{
+      font-size: 1em!important;
+    }
+  }

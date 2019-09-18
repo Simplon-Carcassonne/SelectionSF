@@ -1,0 +1,119 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Selection{% endblock %}
+
+{% block body %}
+    {% include 'headers/_jumbo.html.twig' with {jumboTitle:'Sélection',jumboText:""} %}
+
+    <div class="container-fluid">
+        <div class="row align-items-center justify-content-center  my-3 py-3" data-aos-anchor-placement="top-center"
+             data-aos="fade-down">
+            <div class="col-lg-6 mbr-col-md-8" data-aos-anchor-placement="top-center" data-aos="fade-down">
+                <div class="wrap">
+                    <div class="ico-wrap">
+                        <span class="mbr-iconfont fa fa-graduation-cap fa-2x"></span>
+                    </div>
+                    <div class="text-wrap vcenter">
+                        <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5"> {{ selection.title }}
+                            <span></span>
+                        </h2>
+                        <p class="mbr-fonts-style text1 mbr-text display-6">
+                        <span class="mr-5">
+                               Début : {{ selection.dateStart ? selection.dateStart|date('d/m/Y') : '' }}
+                            <span class="ml-5"> Fin : {{ selection.dateEnd ? selection.dateEnd|date('d/m/Y') : '' }}</span>
+                        </span><br>
+                            <strong>
+                                Adresse :
+                            </strong><br>
+                            {{ selection.address }}<br>
+                            {{ selection.postCode }}
+                            {{ selection.city }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if is_granted('ROLE_ADMIN') %}
+        <div class="row justify-content-center text-center">
+            <a class="mr-2" href="{{ path('selection_index') }}">
+                <button class="btn btn-secondary"><i class="fa fa-arrow-left"></i></button>
+            </a>
+            <a class="mr-2" href="{{ path('selection_edit', {'id': selection.id}) }}">
+                <button class="btn btn-warning"><i class="fa fa-pencil-square-o"></i></button>
+            </a>
+           {{ include('selection/_delete_form.html.twig') }}
+        </div>
+
+    {% else %}
+        <div class="row justify-content-center text-center">
+            <div class="col-md-2  mt-2 mb-5">
+                <a href="{{ path('selection_index') }}">
+                    <button class="btn btn-secondary"><i class="fa fa-arrow-left"></i></button>
+                </a>
+            </div>
+        </div>
+    {% endif %}
+
+
+
+            <table class="table mt-5">
+                <thead>
+                <tr>
+                    <th class="d-none d-sm-table-cell">Genre</th>
+                    <th class="d-sm-table-cell">Nom</th>
+                    <th class="d-sm-table-cell">Prénom</th>
+                    <th class="d-none d-sm-table-cell">Date_de_naissance</th>
+                    <th class="d-sm-table-cell">Téléphone</th>
+                    <th class="d-none d-sm-table-cell">Adresse_email</th>
+                    <th class="d-none d-sm-table-cell">Nationalité</th>
+                    <th class="d-none d-sm-table-cell">Préselec.</th>
+                    <th class="d-sm-table-cell">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for candidate in selection.candidates %}
+                    <tr>
+                      {% if candidate.genus == 'female'  %}
+                        <td class="d-none d-sm-table-cell"><i class="fa fa-female"></i></td>
+                      {% else %}
+                      <td class="d-none d-sm-table-cell"><i class="fa fa-male"></i></td>
+                      {% endif %}
+                        <td class="d-sm-table-cell">{{ candidate.name }}</td>
+                        <td class="d-sm-table-cell">{{ candidate.surname }}</td>
+                        <td class="d-none d-sm-table-cell">{{ candidate.dateOfBirth ? candidate.dateOfBirth|date('d-m-Y') : '' }}</td>
+                        <td class="d-sm-table-cell"> {{ candidate.phoneNumber }}</td>
+                        <td class="d-none d-sm-table-cell">{{ candidate.mailAddress }}</td>
+                        <td class="d-none d-sm-table-cell">{{ candidate.nationality }}</td>
+                        {% if candidate.status == 1  %}
+                        <td class="d-none d-sm-table-cell green"><i class="fa fa-check"></i></td>
+                        {% else %}
+                        <td class="d-none d-sm-table-cell red"><i class="fa fa-times"></i></td>
+                        {% endif %}
+                        <td>
+                            <a href="{{ path('candidate_show', {'id': candidate.id}) }}">
+                                <button class="btn btn-success"><i class="fa fa-eye"></i></button>
+                            </a>
+                            {% if is_granted('ROLE_MASTER') %}
+                            <a href="{{ path('candidate_edit', {'id': candidate.id}) }}">
+                                <button class="btn btn-warning"><i class="fa fa-pencil-square-o"></i></button>
+                            </a>
+                            {% else %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="32">Aucun candidats trouvé</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+
+{% endblock %}
+
+{% block javascripts %}
+
+{% endblock %}

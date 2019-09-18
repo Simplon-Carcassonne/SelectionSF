@@ -1,0 +1,121 @@
+{% extends 'base.html.twig' %}
+{% form_theme form 'bootstrap_4_layout.html.twig' %}
+
+{% block title %}Candidature
+{% endblock %}
+{% block stylesheets %}{% endblock %}
+{% block body %}
+    <section class="row justify-content-center">
+        <div class="col-xs-12 col-md-12">
+            <div class="card my-5 " id="contactform">
+                {{ form_start(form) }}
+                <div class="card-header rounded-top" id="cardheader">
+                    <div class="row justify-content-center pt-2">
+                        <h1 class="p-3 rounded">Formulaire de candidature</h1>
+                    </div>
+                    <div class="row justify-content-center pb-2">
+                        <span class="text-muted">Développeur Web &amp; Web mobile Carcassonne</span>
+                    </div>
+                </div>
+                {% for message in app.flashes('danger') %}
+                    <div class="alert alert-danger">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+                {{ form_errors(form) }}
+                <div class="sw-theme-dots" id="smartwizard">
+                    <ul class="row justify-content-around py-2" id="steps">
+                        <li>
+                            <a class="text-center steps" href="#step-1">1<br/>Vous connaître
+                            </a>
+                        </li>
+                        <li>
+                            <a class="text-center steps" href="#step-2">2<br/>Vous joindre
+                            </a>
+                        </li>
+                        <li>
+                            <a class="text-center steps" href="#step-3">3<br/>Vous accompagner
+                            </a>
+                        </li>
+                        <li>
+                            <a class="text-center steps" href="#step-4">4<br/>Vos expériences
+                            </a>
+                        </li>
+                        <li>
+                            <a class="text-center steps" href="#step-5">5<br/>Votre motivation
+                            </a>
+                        </li>
+                        <li>
+                            <a class="text-center steps" href="#step-6">6<br/>Pour finir
+                            </a>
+                        </li>
+                    </ul>
+                    <div id="form-content">
+                        <div class="mx-5" id="step-1">
+                            {{ form_row(form.genus)}}
+                            {{ form_row(form.name)}}
+                            {{ form_row(form.surname)}}
+                            {{ form_row(form.date_of_birth)}}
+                            {{ form_row(form.birth_country)}}
+                            {{ form_row(form.nationality)}}
+                        </div>
+                        <div class="mx-5" id="step-2">
+                            {{ form_row(form.address)}}
+                            {{ form_row(form.post_code)}}
+                            {{ form_row(form.city)}}
+                            {{ form_row(form.phone_number)}}
+                            {{ form_row(form.mail_address)}}
+                        </div>
+                        <div class="mx-5" id="step-3">
+                            {{ form_row(form.school_stopped_year)}}
+                            {{ form_row(form.school_level)}}
+                            {{ form_row(form.situation)}}
+                            {{ form_row(form.pole_emploi_id)}}
+                            {{ form_row(form.pole_emploi_compensation_end_date)}}
+                            {{ form_row(form.social_security)}}
+                        </div>
+                        <div class="mx-5" id="step-4">
+                            {{ form_row(form.resume)}}
+                            {{ form_row(form.dev_skills)}}
+                            {{ form_row(form.english_level)}}
+                            {{ form_row(form.superhero)}}
+                            {{ form_row(form.one_year_later)}}
+                            {{ form_row(form.hack_experience)}}
+                        </div>
+                        <div class="mx-5" id="step-5">
+                            {{ form_row(form.motivation)}}
+                            {{ form_errors(form.sololearn)}}
+                            {{ form_label(form.sololearn)}}<br>
+                            <span class="text-muted">Rendez vous sur sur la plateforme
+                                <a class="text-dark" href="https://www.sololearn.com/" target="_blank">www.sololearn.com</a>
+                                et inscrivez-vous gratuitement.<br>Vous devez passer au minimum HTML Fundamentals :
+                                25 lessons; CSS Fundamentals : 35 lessons; JavaScript Tutorial : 29 lessons; PHP Tutorial : 35 lessons.<br>
+                                Partagez votre compte public sous cette <a class="text-dark" href="https://www.sololearn.com/Profile/4287114" target="_blank">cette forme</a>
+                                et copiez le lien correspondant ci-dessous.</p>
+                                {{form_widget(form.sololearn)}}
+                            </span>
+                            {{ form_row(form.sololearn_bonus)}}
+                        </div>
+                        <div class="mx-5" id="step-6">
+                            {{form_row(form.disponibility)}}
+                            {{form_row(form.remuneration)}}
+                            {{form_row(form.guidance_source)}}
+                            {{ form_row(form.submit)}}
+                        </div>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </section>
+    {% include 'footers/_mainfooter.html.twig' %}
+{% endblock %}
+{% block javascripts %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="js/SW/dist/js/jquery.smartWizard.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#smartwizard').smartWizard({autoAdjustHeight: true});
+        });
+    </script>
+{% endblock %}

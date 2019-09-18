@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur 403
+{% endblock %}
+{% block body %}
+
+    {% include 'headers/_jumbo.html.twig' with {jumboTitle:'Accès refusé',jumboText:"Vous n\'êtes pas autorisé à jouer avec les utilisateur "} %}
+
+    <a href="{{ path('home') }}">
+        <button class="btn btn-block bg-red mb-2" id="BtnToForm">Accueil</button>
+    </a>
+
+    {% endblock %}

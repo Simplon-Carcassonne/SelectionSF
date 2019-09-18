@@ -1,0 +1,139 @@
+{{ form_start(form) }}
+<div class="formCandidate">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            {{ form_label(form.genus) }}
+            {{ form_widget(form.genus, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="col-md-4 mb-4">
+            {{ form_label(form.name) }}
+            {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="col-md-4 mb-4">
+            {{ form_label(form.surname) }}
+            {{ form_widget(form.surname, {'attr': {'class': 'form-control'}}) }}
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-md-4  mb-4">
+            {{ form_label(form.date_of_birth) }}
+            {{ form_widget(form.date_of_birth, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="col-md-4 mb-4">
+            {{ form_label(form.birth_country) }}
+            {{ form_widget(form.birth_country, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="col-md-4 mb-4">
+            {{ form_label(form.nationality) }}
+            {{ form_widget(form.nationality, {'attr': {'class': 'form-control'}}) }}
+        </div>
+    </div>
+    <div class="col-md-10  mb-4">
+        {{ form_label(form.social_security) }}
+        {{ form_widget(form.social_security, {'attr': {'class': 'form-control'}}) }}
+    </div>
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            {{ form_label(form.address) }}
+            {{ form_widget(form.address, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="col-md-6 mb-4">
+            {{ form_label(form.post_code) }}
+            {{ form_widget(form.post_code, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="col-md-6 mb-4">
+            {{ form_label(form.city) }}
+            {{ form_widget(form.city, {'attr': {'class': 'form-control'}}) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            {{ form_label(form.phone_number) }}
+            {{ form_widget(form.phone_number, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="col-md-6 mb-4">
+            {{ form_label(form.mail_address) }}
+            {{ form_widget(form.mail_address, {'attr': {'class': 'form-control'}}) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-7 mb-4">
+            {{ form_label(form.school_level) }}
+            {{ form_widget(form.school_level, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="col-md-5 mb-4">
+            {{ form_label(form.situation) }}
+            {{ form_widget(form.situation, {'attr': {'class': 'form-control'}}) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            {{ form_label(form.pole_emploi_id) }}
+            {{ form_widget(form.pole_emploi_id, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="col-md-6 mb-4">
+            {{ form_label(form.pole_emploi_compensation_end_date) }}
+            {{ form_widget(form.pole_emploi_compensation_end_date, {'attr': {'class': 'form-control'}}) }}
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        {{ form_label(form.dev_skills) }}
+        {{ form_widget(form.dev_skills, {'attr': {'class': 'form-control'}}) }}
+    </div>
+    <div class="col-md-12 mb-4">
+        {{ form_label(form.superhero) }}
+        {{ form_widget(form.superhero, {'attr': {'class': 'form-control'}}) }}
+    </div>
+    <div class="col-md-12 mb-4">
+        {{ form_label(form.hack_experience) }}
+        {{ form_widget(form.hack_experience, {'attr': {'class': 'form-control'}}) }}
+    </div>
+    <div class="col-md-4 mb-4">
+        {{ form_label(form.school_stopped_year) }}
+        {{ form_widget(form.school_stopped_year, {'attr': {'class': 'form-control'}}) }}
+    </div>
+    <div class="col-md-12 mb-4">
+        {{ form_label(form.resume) }}
+        {{ form_widget(form.resume, {'attr': {'class': 'form-control'}}) }}
+    </div>
+    <div class="col-md-4 mb-4">
+        {{ form_label(form.english_level) }}
+        {{ form_widget(form.english_level, {'attr': {'class': 'form-control'}}) }}
+    </div>
+    <div class="col-md-12 mb-4">
+        {{ form_label(form.motivation) }}
+        {{ form_widget(form.motivation, {'attr': {'class': 'form-control'}}) }}
+    </div>
+    <div class="col-md-12 mb-4">
+        {{ form_label(form.one_year_later) }}
+        {{ form_widget(form.one_year_later, {'attr': {'class': 'form-control'}}) }}
+    </div>
+    <div class="col-md-12 mb-4">
+        {{ form_label(form.sololearn) }}
+        {{ form_widget(form.sololearn, {'attr': {'class': 'form-control'}}) }}
+    </div>
+    <div class="col-md-12 mb-4">
+        {{ form_label(form.sololearn_bonus) }}
+        {{ form_widget(form.sololearn_bonus) }}
+    </div>
+    <div class="col-md-12 mb-4">
+        {{ form_label(form.disponibility) }}
+        {{ form_widget(form.disponibility, {'attr': {'class': 'form-control'}}) }}
+    </div>
+    <div class="col-md-12 mb-4">
+        {{ form_label(form.remuneration) }}
+        {{ form_widget(form.remuneration, {'attr': {'class': 'form-control'}}) }}
+    </div>
+    <div class="col-md-12 mb-4">
+        {{ form_label(form.guidance_source) }}
+        {{ form_widget(form.guidance_source, {'attr': {'class': 'form-control'}}) }}
+    </div>
+    <label class="toggle row">
+        <div class="mr-2"></div>{{ form_widget(form.status)}}
+        <i data-swchon-text="ON" data-swchoff-text="OFF"></i>
+        <div class="ml-5">{{ form_label(form.status) }}</div>
+    </label>
+    <br>
+<button class="btn btn-primary m-3"><i class="fa fa-hdd-o"></i></button>
+</div>
+{{ form_end(form) }}

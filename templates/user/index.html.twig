@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User index{% endblock %}
+
+{% block body %}
+    {% include 'headers/_jumbo.html.twig' with {jumboTitle:'Utilisateurs ',jumboText:"Affichage de tout les utilisateurs inscrits"} %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Nom/Prénom</th>
+            <th>Email</th>
+            <th class="d-none d-sm-block">Role</th>
+            <th>actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.surname }} {{ user.name }} </td>
+                <td>{{ user.email }}</td>
+                {% if user.roles == ['ROLE_ADMIN'] %}
+                <td class="d-none d-sm-block">Admin</td>
+                {% elseif user.roles == ['ROLE_MASTER'] %}
+                <td class="d-none d-sm-block">Master</td>
+                {% elseif user.roles == ['ROLE_JURY'] %}
+                <td class="d-none d-sm-block">Jury</td>
+                {% else %}
+                <td class="d-none d-sm-block">User</td>
+                {% endif %}
+                <td>
+                    <a href="{{ path('user_show', {'id': user.id}) }}">
+                        <button class="btn btn-success">Voir</button>
+                    </a>
+                    <a href="{{ path('user_edit', {'id': user.id}) }}">
+                        <button class="btn btn-warning">Modifier</button>
+                    </a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">nAucun utilisateur trouvé</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('user_new') }}">
+        <button class="btn btn-secondary">Créer un nouvel utilisateur</button>
+    </a>
+{% endblock %}

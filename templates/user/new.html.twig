@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New User{% endblock %}
+
+{% block body %}
+    {% include 'headers/_jumbo.html.twig' with {jumboTitle:'nouveau utilisateur ',jumboText:"Créer un nouveau utilisateur"} %}
+    {% form_theme form 'bootstrap_4_layout.html.twig' %}
+    <div class="mx-4">
+
+    {{ include('user/_form.html.twig') }}
+
+    <a href="{{ path('user_index') }}">
+        <button class="btn btn-secondary">Retour a la liste</button>
+    </a>
+    </div>
+{% endblock %}

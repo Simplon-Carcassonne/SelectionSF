@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Candidate index{% endblock %}
+
+{% block body %}
+    {% include 'headers/_jumbo.html.twig' with {jumboTitle:'Candidats ',jumboText:"Affichage de tous les candidats ayant postulé a toutes les sélections"} %}
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="d-none d-sm-table-cell">Genre</th>
+                <th class="d-sm-table-cell">Nom</th>
+                <th class="d-sm-table-cell">Prénom</th>
+                <th class="d-none d-sm-table-cell">Sélection</th>
+                <th class="d-none d-sm-table-cell">Date_de_naissance</th>
+                <th class="d-sm-table-cell">Téléphone</th>
+                <th class="d-none d-sm-table-cell">Adresse_email</th>
+                <th class="d-none d-sm-table-cell">Nationalité</th>
+                <th class="d-none d-sm-table-cell">Préselec.</th>
+                <th class="d-sm-table-cell">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for candidate in candidates %}
+            <tr>
+              {% if candidate.genus == 'female'  %}
+                <td class="d-none d-sm-table-cell"><i class="fa fa-female"></i></td>
+              {% else %}
+              <td class="d-none d-sm-table-cell"><i class="fa fa-male"></i></td>
+              {% endif %}
+                <td class="d-sm-table-cell">{{ candidate.name }}</td>
+                <td class="d-sm-table-cell">{{ candidate.surname }}</td>
+               <th class="d-none d-sm-table-cell">{{ candidate.selection.title }}</th>
+                <td class="d-none d-sm-table-cell">{{ candidate.dateOfBirth ? candidate.dateOfBirth|date('d-m-Y') : '' }}</td>
+                <td class="d-sm-table-cell"> {{ candidate.phoneNumber }}</td>
+                <td class="d-none d-sm-table-cell">{{ candidate.mailAddress }}</td>
+                <td class="d-none d-sm-table-cell">{{ candidate.nationality }}</td>
+
+                {% if candidate.status == 1  %}
+                <td class="d-none d-sm-table-cell green"><i class="fa fa-check"></i></td>
+                {% else %}
+                <td class="d-none d-sm-table-cell red"><i class="fa fa-times"></i></td>
+                {% endif %}
+                <td>
+                    <a href="{{ path('candidate_show', {'id': candidate.id}) }}"><button class="btn btn-success"><i class="fa fa-eye"></i></button></a>
+                    {% if is_granted('ROLE_MASTER') %}
+                        <a href="{{ path('candidate_edit', {'id': candidate.id}) }}"><button class="btn btn-warning"><i class="fa fa-pencil-square-o"></i></button></a>
+                    {% else %}
+
+                    {% endif %}
+
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="32">Aucun candidat trouvé</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock%}

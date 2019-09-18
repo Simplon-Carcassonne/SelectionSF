@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur 404
+{% endblock %}
+{% block body %}
+
+    {% include 'headers/_jumbo.html.twig' with {jumboTitle:'La page n\'existe pas :',jumboText:"vous avez du vous perdre ..."} %}
+
+    <a href="{{ path('home') }}">
+        <button class="btn btn-block bg-red mb-2" id="BtnToForm">Accueil</button>
+    </a>
+
+    {% endblock %}

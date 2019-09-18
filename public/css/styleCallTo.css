@@ -1,0 +1,54 @@
+@font-face {
+  font-family: Avenir;
+  src: url(../fonts/Avenir.woff2) format("woff2"), url(../fonts/Avenir.woff) format("woff"), url(../fonts/Avenir.ttf) format("truetype");
+}
+
+:root {
+  --mainred: #CC233A;
+  --maingrey: #666;
+  --avenirfont: 'Avenir', sans-serif;
+  --robotofont: 'Roboto', sans-serif;
+}
+
+#BtnToForm {
+  display: none;
+}
+#Inscript{
+  z-index:1011;
+  background:  no-repeat url("../pics/RedTriangle.svg");
+  background-position: top right;
+  position: fixed;
+  right: -1%;
+  top: 0;
+  width: 50%;
+  height:100vh;
+  filter: drop-shadow(-5px 5px 4px #333);
+}
+#BtnInscript{
+  z-index: 1012;
+  position: fixed;
+  top: 25%;
+}
+.leaflet-popup-content-wrapper, .leaflet-popup-tip{
+  background-color: var(--mainred);
+  Color: white;
+  font-weight: bold;
+}
+.leaflet-container a.leaflet-popup-close-button{
+  color: white;
+}
+
+#BtnInscript p{
+  font-size:0.8em;
+  color: white;
+}
+
+
+@media (max-width: 1000px) {
+  #Inscript {
+    display: none;
+  }
+  #BtnToForm {
+    display: block;
+  }
+}
