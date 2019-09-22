@@ -50,6 +50,21 @@ class RateRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findOneBySelectionCandidateAndUser($selection,$candidate,$user,$rateType)
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.candidate = :candidate')
+            ->setParameter('candidate', $candidate)
+            ->andWhere('s.selection = :selection')
+            ->setParameter('selection', $selection)
+            ->andWhere('s.rateType = :rateType')
+            ->setParameter('rateType', $rateType)
+            ->andWhere('s.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
 
 
 

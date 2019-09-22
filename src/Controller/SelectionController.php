@@ -4,9 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Selection;
 use App\Entity\Candidate;
+use App\Entity\Rate;
 use App\Form\SelectionType;
 use App\Repository\CandidateRepository;
 use App\Repository\SelectionRepository;
+use App\Service\SelectionHelper;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -69,11 +71,32 @@ class SelectionController extends AbstractController
     /**
      * @Route("/{id}/{mode}", name="selection_show", methods={"GET"})
      */
-    public function show(Selection $selection, $mode = null, CandidateRepository $candidateRepo): Response
+    public function show(Selection $selection, $mode = null, CandidateRepository $candidateRepo, SelectionHelper $helper): Response
     {
         if($mode == 'preselected'){
             //get All Candidates for this selection
             $candidates = $candidateRepo->getPreselectedCandidatesBySelectionAlphabetical($selection);
+        }
+        else if($mode == 'preselectedRate'){
+            $candidatesunfilered = $candidateRepo->getPreselectedCandidatesBySelectionAlphabetical($selection);
+
+            $candidates = $candidatesunfilered;
+            $indice = 0;
+            foreach($candidatesunfilered as $candidate){
+                $total = $helper->getCandidateTotalRates($selection, $candidate, Rate::TYPE_PRESELECTION);
+                //$candidates[$indice]['total'] =  $total;
+                $candidates[$indice]->total =  $total;
+                $indice++;
+            }
+            //https://stackoverflow.com/questions/2699086/how-to-sort-multi-dimensional-array-by-value
+            usort($candidates, function($a, $b) {
+                return $b->total <=> $a->total;
+            });
+
+            /*usort($candidates, function($a, $b) {
+                return $a['total'] <=> $b['total'];
+            });*/
+
         }
         else if($mode == 'selected'){
             $candidates = $candidateRepo->getSelectedCandidatesBySelectionAlphabetical($selection);
@@ -97,6 +120,7 @@ class SelectionController extends AbstractController
                 return $this->render('selection/show.html.twig', [
                     'selection' => $selection,
                     'currentUser' => $this->getUser(),
+                    'candidates'=>$candidates
                 ]);
             }
         }
@@ -110,7 +134,7 @@ class SelectionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/{nextStep}", name="selection_changeStatus", methods={"GET","POST"})
+     * @Route("changeStatus/{id}/{nextStep}", name="selection_changeStatus", methods={"GET","POST"})
      * @IsGranted("ROLE_MASTER", message="No access! Get out!")
      */
     public function changeSelectionStatus(ObjectManager $manager,Selection $selection, $nextStep = null):Response{
@@ -118,15 +142,18 @@ class SelectionController extends AbstractController
         if($nextStep){
             switch($nextStep){
                 case 'Fermée':
-                    $selection->setSelectionStatus(Selection::STATE_FORM);
+                    $selection->setSelectionStatus(Selection::STATE_CLOSED);
                     break;
                 case 'Formulaire ouvert':
-                    $selection->setSelectionStatus(Selection::STATE_PRESELECTION);
+                    $selection->setSelectionStatus(Selection::STATE_FORM);
                     break;
                 case 'Préselection':
-                    $selection->setSelectionStatus(Selection::STATE_SELECTION);
+                    $selection->setSelectionStatus(Selection::STATE_PRESELECTION);
                     break;
                 case 'Sélection':
+                    $selection->setSelectionStatus(Selection::STATE_SELECTION);
+                    break;
+                case 'Terminée':
                     $selection->setSelectionStatus(Selection::STATE_ENDED);
                     break;
                 default:
@@ -213,8 +240,8 @@ class SelectionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/csv", name="readCsv")
-     * @IsGranted("ROLE_MASTER", message="No access! Get out!")
+     * @Route("/special/csv/{id}", name="readCsv")
+     * @IsGranted("ROLE_ADMIN", message="No access! Get out!")
      *
      * @param Selection $selection
      * @param SelectionRepository $repoSelection
@@ -232,8 +259,8 @@ class SelectionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/saveCsv", name="saveCsv")
-     * @IsGranted("ROLE_MASTER", message="No access! Get out!")
+     * @Route("/special/{id}", name="saveCsv")
+     * @IsGranted("ROLE_ADMIN", message="No access! Get out!")
      *
      * @param ObjectManager $manager
      * @param Selection $selection

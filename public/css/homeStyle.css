@@ -26,6 +26,9 @@ hr {
   z-index: 20000;
   width: 100%;
 }
+.notRated{
+  color: #999;
+}
 
 .jumbo{
 

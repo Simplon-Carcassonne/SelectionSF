@@ -208,7 +208,8 @@
                         <div class="mb-3">
                             {{ form_widget(form) }}
                             {% if hasRated %}
-                                Note actuelle : {{ rateFromUser.value }}
+                                Votre note actuelle : {{ rateFromUser.value }}<br>
+                                Note totale : {{ candidateTotalRates(candidate.selection, candidate, 'Préselection') }} / {{ totalMaxPoints(candidate.selection) }}
                                 <a href="{{ path('candidate_show', {'id': candidate.id}) }}">
                                     <button class="btn btn-warning"><i class="fa fa-pencil-square-o"></i> {{ button_label|default('Changer Note') }}</button>
                                 </a>
