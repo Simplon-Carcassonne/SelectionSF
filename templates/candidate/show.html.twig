@@ -3,151 +3,305 @@
 {% block title %}Candidate{% endblock %}
 
 {% block body %}
-    <h1 class="ml-3 my-3 h1">Candidat {{ candidate.surname }} {{ candidate.name }}</h1>
-    <!-- <a href="{{ path('candidate_index', {'id': candidate.id}) }}">
-        <button class="btn btn-secondary mb-3"><i class="fa fa-arrow-left"></i></button></a>
-        <a href=javascript:history.go(-1)><i class="fa fa-arrow-left"></i> Retour</a> -->
-        <form>
-<input class="btn btn-secondary mb-3" type = "button" value = "Retour"  onclick = "history.back()">
-</form>
-    <div class="col-md-8">
-        <table class="table">
-            <tbody>
-            <tr>
-                <th>Genre</th>
-                <td>{{ candidate.genus }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ candidate.name }}</td>
-            </tr>
-            <tr>
-                <th>Prénom</th>
-                <td>{{ candidate.surname }}</td>
-            </tr>
-            <tr>
-                <th>Date_de_naissance</th>
-                <td>{{ candidate.dateOfBirth ? candidate.dateOfBirth|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Adresse</th>
-                <td>{{ candidate.address }}</td>
-            </tr>
-            <tr>
-                <th>code_postal</th>
-                <td>{{ candidate.postCode }}</td>
-            </tr>
-            <tr>
-                <th>Ville</th>
-                <td>{{ candidate.city }}</td>
-            </tr>
-            <tr>
-                <th>Numéro_de_téléphone</th>
-                <td>{{ candidate.phoneNumber }}</td>
-            </tr>
-            <tr>
-                <th>Adresse_mail</th>
-                <td>{{ candidate.mailAddress }}</td>
-            </tr>
-            <tr>
-                <th>Dev_skills</th>
-                <td>{{ candidate.devSkills }}</td>
-            </tr>
-            <tr>
-                <th>Niveau_scolaire</th>
-                <td>{{ candidate.schoolLevel }}</td>
-            </tr>
-            <tr>
-                <th>Situation</th>
-                <td>{{ candidate.situation }}</td>
-            </tr>
-            <tr>
-                <th>Pays_de_naissance</th>
-                <td>{{ candidate.birthCountry }}</td>
-            </tr>
-            <tr>
-                <th>Nationalité</th>
-                <td>{{ candidate.nationality }}</td>
-            </tr>
-            <tr>
-                <th>Pole_emploi_id</th>
-                <td>{{ candidate.poleEmploiId }}</td>
-            </tr>
-            <tr>
-                <th>Pole_emploi_compensation_date_de_fin</th>
-                <td>{{ candidate.poleEmploiCompensationEndDate ? candidate.poleEmploiCompensationEndDate|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Sécurité_social</th>
-                <td>{{ candidate.socialSecurity }}</td>
-            </tr>
-            <tr>
-                <th>Super-héros</th>
-                <td>{{ candidate.superhero }}</td>
-            </tr>
-            <tr>
-                <th>Hack_experience</th>
-                <td>{{ candidate.hackExperience }}</td>
-            </tr>
-            <tr>
-                <th>School_stopped_year</th>
-                <td>{{ candidate.schoolStoppedYear }}</td>
-            </tr>
-            <tr>
-                <th>Resumé</th>
-                <td>{{ candidate.resume }}</td>
-            </tr>
-            <tr>
-                <th>Niveau_anglais</th>
-                <td>{{ candidate.englishLevel }}</td>
-            </tr>
-            <tr>
-                <th>Motivation</th>
-                <td>{{ candidate.motivation }}</td>
-            </tr>
-            <tr>
-                <th>Un_an_plus_tard</th>
-                <td>{{ candidate.oneYearLater }}</td>
-            </tr>
-            <tr>
-                <th>Sololearn</th>
-                <td>{{ candidate.sololearn }}</td>
-            </tr>
-            <tr>
-                <th>Sololearn_bonus</th>
-                <td>{{ candidate.sololearnBonus ? candidate.sololearnBonus|join(', ') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Disponibilité</th>
-                <td>{{ candidate.disponibility ? 'Yes' : 'No' }}</td>
-            </tr>
-            <tr>
-                <th>Rémunération</th>
-                <td>{{ candidate.remuneration }}</td>
-            </tr>
-            <tr>
-                <th>Guidance_source</th>
-                <td>{{ candidate.guidanceSource }}</td>
-            </tr>
-            <tr>
-                <th>Préselection</th>
-                <td>{{ candidate.status ? 'Oui' : 'Non' }}</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="mb-5 row">
-        <a href="{{ path('candidate_index', {'id': candidate.id}) }}">
-            <button class="btn btn-secondary m-3"><i class="fa fa-arrow-left"></i></button>
-        </a>
-        {% if is_granted('ROLE_MASTER') %}
-            <a href="{{ path('candidate_edit', {'id': candidate.id}) }}">
-                <button class="btn btn-warning m-3"><i class="fa fa-pencil-square-o"></i></button>
+
+    <div class="container">
+       <h1 class="ml-3 my-3 h1">Candidat.e : {{ candidate.surname }} {{ candidate.name }}</h1>
+            <a href="{{ path('selection_show', {'id': candidate.selection.id}) }}">
+                <button class="btn btn-info"><i class="fa fa-arrow-left"></i> Retour Selection</button>
             </a>
-            {{ include('candidate/_delete_form.html.twig') }}
-        {% else %}
+            <a href="{{ path('candidate_index') }}">
+                <button class="btn btn-info"><i class="fa fa-arrow-left"></i> Retour TOUS Candidats</button>
+            </a>
+            <form>
+                <input class="btn btn-secondary mb-3" type = "button" value = "<< Back"  onclick = "history.back()">
+            </form>
 
-        {% endif %}
+        <div class="row">
+            <div class="col-md-8">
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <th>Genre</th>
+                        <td>{{ candidate.genus }}</td>
+                    </tr>
+                    <tr>
+                        <th>Nom</th>
+                        <td>{{ candidate.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Prénom</th>
+                        <td>{{ candidate.surname }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date_de_naissance</th>
+                        <td>{{ candidate.dateOfBirth ? candidate.dateOfBirth|date('Y-m-d H:i:s') : '' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Adresse</th>
+                        <td>{{ candidate.address }}</td>
+                    </tr>
+                    <tr>
+                        <th>code_postal</th>
+                        <td>{{ candidate.postCode }}</td>
+                    </tr>
+                    <tr>
+                        <th>Ville</th>
+                        <td>{{ candidate.city }}</td>
+                    </tr>
+                    <tr>
+                        <th>Numéro_de_téléphone</th>
+                        <td>{{ candidate.phoneNumber }}</td>
+                    </tr>
+                    <tr>
+                        <th>Adresse_mail</th>
+                        <td>{{ candidate.mailAddress }}</td>
+                    </tr>
+                    <tr>
+                        <th>Dev_skills</th>
+                        <td>{{ candidate.devSkills }}</td>
+                    </tr>
+                    <tr>
+                        <th>Niveau_scolaire</th>
+                        <td>{{ candidate.schoolLevel }}</td>
+                    </tr>
+                    <tr>
+                        <th>Situation</th>
+                        <td>{{ candidate.situation }}</td>
+                    </tr>
+                    <tr>
+                        <th>Pays_de_naissance</th>
+                        <td>{{ candidate.birthCountry }}</td>
+                    </tr>
+                    <tr>
+                        <th>Nationalité</th>
+                        <td>{{ candidate.nationality }}</td>
+                    </tr>
+                    <tr>
+                        <th>Pole_emploi_id</th>
+                        <td>{{ candidate.poleEmploiId }}</td>
+                    </tr>
+                    <tr>
+                        <th>Pole_emploi_compensation_date_de_fin</th>
+                        <td>{{ candidate.poleEmploiCompensationEndDate ? candidate.poleEmploiCompensationEndDate|date('Y-m-d H:i:s') : '' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Sécurité_social</th>
+                        <td>{{ candidate.socialSecurity }}</td>
+                    </tr>
+                    <tr>
+                        <th>Super-héros</th>
+                        <td>{{ candidate.superhero }}</td>
+                    </tr>
+                    <tr>
+                        <th>Hack_experience</th>
+                        <td>{{ candidate.hackExperience }}</td>
+                    </tr>
+                    <tr>
+                        <th>School_stopped_year</th>
+                        <td>{{ candidate.schoolStoppedYear }}</td>
+                    </tr>
+                    <tr>
+                        <th>Resumé</th>
+                        <td>{{ candidate.resume }}</td>
+                    </tr>
+                    <tr>
+                        <th>Niveau_anglais</th>
+                        <td>{{ candidate.englishLevel }}</td>
+                    </tr>
+                    <tr>
+                        <th>Motivation</th>
+                        <td>{{ candidate.motivation }}</td>
+                    </tr>
+                    <tr>
+                        <th>Un_an_plus_tard</th>
+                        <td>{{ candidate.oneYearLater }}</td>
+                    </tr>
+                    <tr>
+                        <th>Sololearn</th>
+                        <td>{{ candidate.sololearn }}</td>
+                    </tr>
+                    <tr>
+                        <th>Sololearn_bonus</th>
+                        <td>{{ candidate.sololearnBonus ? candidate.sololearnBonus|join(', ') : '' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Disponibilité</th>
+                        <td>{{ candidate.disponibility ? 'Yes' : 'No' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Rémunération</th>
+                        <td>{{ candidate.remuneration }}</td>
+                    </tr>
+                    <tr>
+                        <th>Guidance_source</th>
+                        <td>{{ candidate.guidanceSource }}</td>
+                    </tr>
+                    <tr>
+                        <th>Préselection</th>
+                        <td>{{ candidate.status ? 'Oui' : 'Non' }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4 text-center">
+                <div style="border-radius: 50%;
+                            height: 120px;
+                            width: 120px;
+                            overflow: hidden;
+                            display: inline-block;
+                            vertical-align: top;">
+                    <img src="{{ datas.AVATAR }}" class="img-fluid rounded">
+                </div>
+                <div style="margin: 20px 0 0 20px;
+                            color: #555;
+                            display: inline-block;
+                            vertical-align: top;
+                            white-space: normal;">
+                    <h5>{{ candidate.surname }} {{ candidate.name }}</h5>
+                    Sololearn Level : {{ datas.LEVEL }}<br>
+                    XP Total : {{ totalXP }}
+                </div>
+                <br> <br> <br>
+                <h5>Cours Sololearn:</h5>
+                {% for course in datas.COURSES %}
+
+                    <span style="display: inline-block;
+                                width: 50px;
+                                height: 50px;
+                                border-radius: 50%;
+                                overflow: hidden;
+                                /*position: absolute;
+                                top: 5px;
+                                left: 5px;*/">
+                       <img src="{{ course.IconURL }}" class="img-fluid rounded">
+                    </span><br>
+                    <span style="font-size: 12px;
+                                    margin: 5px 0 0 0;">
+                        {{ course.XP }}
+                        {{ course.Progression |number_format(2, '.', ',') }} %<br><br>
+                    </span>
+                {% endfor %}
+
+                    <hr><br><br>
+                <h5>Evalution de 0 à 2</h5>
+                {{ form_start(form) }}
+                <form class="container-fluid">
+
+                    <div class="form-group row justify-content-center text-center">
+                        <div class="mb-3">
+                            {{ form_label(form.value) }}
+                            {% if hasRated %}
+                                {{ form_widget(form.value , {'attr': {'class': 'form-control', 'value' : rateFromUser.value   }}   ) }}
+                            {% else %}
+                                {{ form_widget(form.value , {'attr': {'class': 'form-control', 'value' : 0}}) }}
+                            {%  endif %}
+                            {% set textValue = "Un commentaire à ajouter ?"%}
+                            {% if rateFromUser.remarque %}
+                                {% set textValue = rateFromUser.remarque %}
+                            {% else %}
+                            {%  endif %}
+                            {{ form_label(form.remarque) }}
+                            {{ form_widget(form.remarque , {'attr': {'class': 'form-control', 'cols': '50','rows' :'5'} ,  'value' : textValue  }) }}
+                        </div>
+                    </div>
+                    <div class="form-group row justify-content-center ">
+                        <div class="mb-3">
+                            {{ form_widget(form) }}
+                            {% if hasRated %}
+                                Note actuelle : {{ rateFromUser.value }}
+                                <a href="{{ path('candidate_show', {'id': candidate.id}) }}">
+                                    <button class="btn btn-warning"><i class="fa fa-pencil-square-o"></i> {{ button_label|default('Changer Note') }}</button>
+                                </a>
+                            {% else %}
+                                Note actuelle : 0
+                                <div class="alert alert-warning" role="alert">
+                                    On attend votre note !
+                                </div>
+                                <a href="{{ path('candidate_show', {'id': candidate.id}) }}">
+                                    <button class="btn btn-success"><i class="fa fa-pencil-square-o"></i> {{ button_label|default('Enregistrer Note') }}</button>
+                                </a>
+                            {%  endif %}
+                        </div>
+                    </div>
+                </form>
+                {{ form_end(form) }}
+                <hr><br><br>
+                <h5>Choix final</h5>
+                {% if is_granted('ROLE_MASTER') %}
+                     {% if isRatesOK %}
+                         <div class="alert alert-success" role="alert">
+                             Toutes les notes ont été données
+                         </div>
+                         {% if candidate.status is same as (false) %}
+                         <a href="{{ path('candidatePreselect', {'id': candidate.id}) }}">
+                             <button class="btn btn-success m-3"><i class="fa fa-check"></i> Passer en Sélection finale</button>
+                         </a>
+                         {% else %}
+                         {% endif %}
+                     {% else %}
+                         <div class="alert alert-warning" role="alert">
+                             {% if hasRated %}
+                                 En attente des notes des autres membres du Jury...
+                             {% else %}
+                                 En attente des notes des autres membres du Jury...dont la votre.
+                             {%  endif %}
+                         </div>
+                     {% endif %}
+                {% else %}
+                    {% if isRatesOK %}
+                        <div class="alert alert-success" role="alert">
+                            Toutes les notes ont été données
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning" role="alert">
+                            {% if hasRated %}
+                                En attente des notes des autres membres du Jury...
+                            {% else %}
+                                En attente des notes des autres membres du Jury...dont la votre.
+                            {%  endif %}
+                        </div>
+                    {% endif %}
+                {% endif %}
+                <br>
+                {% if candidate.selection.selectionStatus is same as ('Préselection')%}
+                    {%  if  candidate.status %}
+                    <div class="alert alert-info" role="alert">
+                        Préselection OK
+                    </div>
+                    {% else %}
+                     <div class="alert alert-danger" role="alert">
+                        Préselection KO
+                      </div>
+                    {% endif %}
+                {% elseif  candidate.selection.selectionStatus is same as ('Sélection') %}
+                    {%  if  candidate.selectionStatus is same as ('Préselection') %}
+                        <div class="alert alert-info" role="alert">
+                            Sélection OK
+                        </div>
+                    {% else %}
+                        <div class="alert alert-danger" role="alert">
+                            Sélection KO
+                        </div>
+                    {% endif %}
+                {% else %}
+                {% endif %}
+            </div>
+            <div class="mb-5 row">
+                <a href="{{ path('selection_show', {'id': candidate.selection.id}) }}">
+                    <button class="btn btn-info m-3"><< Retour Selection</button>
+                </a>
+                <!--<a href="{{ path('candidate_index', {'id': candidate.id}) }}">
+                    <button class="btn btn-secondary m-3"><i class="fa fa-arrow-left"></i></button>
+                </a>-->
+                {% if is_granted('ROLE_MASTER') %}
+                    <a href="{{ path('candidate_edit', {'id': candidate.id}) }}">
+                        <button class="btn btn-warning m-3"><i class="fa fa-pencil-square-o"></i></button>
+                    </a>
+                    {{ include('candidate/_delete_form.html.twig') }}
+                {% else %}
+
+                {% endif %}
+            </div>
+        </div>
     </div>
-
 {% endblock %}

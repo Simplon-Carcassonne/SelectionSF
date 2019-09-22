@@ -11,6 +11,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Selection
 {
+    const STATE_CLOSED = 'Fermée';
+    const STATE_FORM = 'Formulaire ouvert';
+    const STATE_PRESELECTION = 'Préselection';
+    const STATE_SELECTION = 'Sélection';
+    const STATE_ENDED = 'Terminée';
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -58,9 +64,55 @@ class Selection
      */
     private $status;
 
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $selectionStatus;
+
+    /**
+     * @return mixed
+     */
+    public function getSelectionStatus()
+    {
+        return $this->selectionStatus;
+    }
+
+    /**
+     * @param mixed $selectionStatus
+     */
+    public function setSelectionStatus($selectionStatus): void
+    {
+        $this->selectionStatus = $selectionStatus;
+    }
+
+
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Rate", mappedBy="selection", orphanRemoval=true)
+     */
+    private $rates;
+
+    /**
+     * @return mixed
+     */
+    public function getRates()
+    {
+        return $this->rates;
+    }
+
+    /**
+     * @param mixed $rates
+     */
+    public function setRates($rates): void
+    {
+        $this->rates = $rates;
+    }
+
+
     public function __construct()
     {
         $this->candidates = new ArrayCollection();
+        $this->rates = new ArrayCollection();
     }
 
     public function getId(): ?int

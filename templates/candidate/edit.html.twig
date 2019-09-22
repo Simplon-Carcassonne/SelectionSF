@@ -8,9 +8,6 @@
         <a href="{{ path('candidate_index', {'id': candidate.id}) }}">
             <button class="btn btn-secondary mb-3"><i class="fa fa-arrow-left"></i></button>
         </a>
-
-
-
         <div class="">
             {{ include('candidate/_form.html.twig', {'button_label': ''}) }}
             <a href="{{ path('candidate_index', {'id': candidate.id}) }}">

@@ -20,6 +20,13 @@ hr {
   margin: 0;
 }
 
+.alert-dismissible {
+  position: absolute;
+  top: -45px;
+  z-index: 20000;
+  width: 100%;
+}
+
 .jumbo{
 
   margin: 20px 0 20px 0;

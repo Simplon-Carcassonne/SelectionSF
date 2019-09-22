@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 /**
@@ -9,6 +10,14 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Candidate
 {
+    const STATE_FORM = 'Form soumis';
+    const STATE_PRESELECTION = 'Préselection';
+    const STATE_PRESELECTION_KO = 'Préselection refusée';
+    const STATE_SELECTION = 'Sélection';
+    const STATE_SELECTION_WAITING = 'Liste d\'attente';
+    const STATE_SELECTION_KO = 'Sélection refusée';
+    const STATE_SIMPLON = 'En formation';
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -199,10 +208,79 @@ class Candidate
     private $status = false;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private $simplonien = false;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $selectionStatus;
+
+    /**
+     * @return mixed
+     */
+    public function getSelectionStatus()
+    {
+        return $this->selectionStatus;
+    }
+
+    /**
+     * @param mixed $selectionStatus
+     */
+    public function setSelectionStatus($selectionStatus): void
+    {
+        $this->selectionStatus = $selectionStatus;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSimplonien()
+    {
+        return $this->simplonien;
+    }
+
+    /**
+     * @param mixed $simplonien
+     */
+    public function setSimplonien($simplonien): void
+    {
+        $this->simplonien = $simplonien;
+    }
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Selection", inversedBy="candidates")
      * @ORM\JoinColumn(nullable=false)
      */
     private $selection;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Rate", mappedBy="candidate", orphanRemoval=true)
+     */
+    private $rates;
+
+    /**
+     * @return mixed
+     */
+    public function getRates()
+    {
+        return $this->rates;
+    }
+
+    /**
+     * @param mixed $rates
+     */
+    public function setRates($rates): void
+    {
+        $this->rates = $rates;
+    }
+
+
+    public function __construct()
+    {
+        $this->rates = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -584,5 +662,70 @@ class Candidate
     public function __toString()
     {
         return $this->name;
+    }
+
+    public function hydrate($datas,$selection){
+
+        $genus = $datas['Numéro de Sécurité Sociale'];
+        $genus = $genus[0];
+        $this->setGenus($genus == "1" ? 'M': 'F');
+
+        $this->setName($datas['NOM']);
+        $this->setSurname($datas['Prénom']);
+        $this->setNationality($datas['Nationalité']);
+        $this->setBirthCountry($datas['Pays de naissance']);
+        $date = new \DateTime($datas['Date de naissance']); //TODO adjust format
+        $this->setDateOfBirth($date);
+
+        $this->setAddress($datas['Adresse']);
+        $this->setCity($datas['Ville']);
+        $this->setPostCode($datas['Code Postal ']);
+
+        $this->setPhoneNumber($datas['Numéro où l\'on peut vous joindre ']);
+        $this->setMailAddress($datas['Email']);
+
+        $this->setSituation($datas['Statut au moment de votre candidature (plusieurs réponses possibles)']);
+        $this->setPoleEmploiId($datas['Numéro Pôle Emploi']);
+        $dateEndPE = new \DateTime($datas['Date de fin d\'indemnisation Pôle Emploi']); //TODO adjust format
+        $this->setPoleEmploiCompensationEndDate($dateEndPE);
+        $this->setSocialSecurity($datas['Numéro de Sécurité Sociale']);
+
+        $this->setDevSkills($datas['Avez vous déjà eu une expérience avec la programmation et/ou l\'informatique avant de remplir ce formulaire ?']);
+        $this->setSuperhero($datas['Si vous étiez un super héros/une super héroïne, qui seriez-vous et pourquoi?']);
+        $this->setHackExperience($datas['Racontez-nous un de vos "hacks" (pas forcément technique ou informatique)']);
+        $this->setSchoolLevel($datas['Quel est le dernier diplôme que vous ayez obtenu ?']);
+        $this->setSchoolStoppedYear($datas['En quelle année avez-vous quitté la formation initiale ?']);
+
+        $this->setResume(implode( $datas['Racontez-nous en quelques phrases votre parcours']) );  //[0]
+
+
+
+        $this->setEnglishLevel($datas['Quel est votre niveau d\'anglais (lu/écrit) ?']);
+        //$this->setMotivation($datas['Dites nous pourquoi vous voulez intégrer l\'ERN Simplon Carcassonne'] ); //[0]
+
+        $reponse = $datas['Dites nous pourquoi vous voulez intégrer l\'ERN Simplon Carcassonne'];
+
+        var_dump($datas['Dites nous pourquoi vous voulez intégrer l\'ERN Simplon Carcassonne']);//die();
+
+        $reponse = $reponse[' Racontez-nous votre parcours et détaillez-nous votre motivation ci-dessous, en vous exprimant avec votre style à vous, mais ne vous limitez pas à un texte tapé à la va-vite'];
+        $reponse = $reponse[' Aussi, n\'hésitez pas à faire une vidéo, un site ou tout autre chose qui démontrera votre envie, votre motivation, et vos compétences !'];
+        $this->setMotivation($reponse);  //[0]
+
+
+        $this->setOneYearLater($datas['Dans un an, avec vos nouveaux superpouvoirs de code informatique, que souhaiterez-vous faire dans votre vie ?']);
+
+        $this->setSololearn($datas['Pré-requis •: SOLOLEARN #Lessons (OBLIGATOIRE) ']);
+        $bonus = explode(', ', $datas['Pour aller plus loin : SOLOLEARN #SuperPouvoirs ']);
+        $this->setSololearnBonus($bonus); //TODO control Array
+
+        $this->setDisponibility($datas['Êtes-vous disponible pour suivre une formation de 7,5 mois à temps plein (35h/semaine) suivie d\'un stage de 3 mois ?']);
+        $this->setRemuneration(implode($datas['Cette formation peut ouvrir droit à une rémunération forfaitaire (ARE Pôle Emploi ou ASP Région, RSA) en fonction de votre situation familiale et de celle en regard de l\'emploi']) );//[0]
+        $this->setGuidanceSource($datas['Comment avez-vous entendu parler de la formation ERN Simplon Carcasonne ?']);
+
+        $this->setSelection($selection);
+
+        $this->setStatus('0');
+        $this->setSelectionStatus(Candidate::STATE_FORM);
+        $this->setSimplonien('0');
     }
 }

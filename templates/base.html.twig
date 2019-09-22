@@ -28,6 +28,18 @@
         {% block stylesheets %}{% endblock %}
     </head>
     <body class="container-fluid">
+    {% block flash_messages %}
+        {% for type, messages in app.session.flashbag.all() %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type }} alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span
+                                class="sr-only">Close</span></button>
+                    {{ message | raw }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    {% endblock %}
+
        {% include 'headers/_mainheader.html.twig' %}
         <main>
             {% block body %}{% endblock %}
@@ -46,6 +58,22 @@
        <script>
            AOS.init();
        </script>
+        <!-- jQuery -->
+        <script type="text/javascript" src="{{ asset('jquery/dist/jquery.min.js') }}"></script>
+        <script type="text/javascript">
+
+            window.addEventListener('load', function () {
+                console.log($(".alert-dismissible"))
+                /***flash bag effect ***/
+                $(".alert-dismissible").animate({top: '0px'}).delay(2000).fadeOut();
+            });
+
+            $(function () {
+                console.log($(".alert-dismissible"))
+                /***flash bag effect ***/
+                $(".alert-dismissible").animate({top: '0px'}).delay(2000).fadeOut();
+            })
+        </script>
         {% block javascripts %}{% endblock %}
     </body>
 </html>

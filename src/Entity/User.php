@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -49,6 +50,21 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      */
     private $surname;
+
+
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Rate", mappedBy="user", orphanRemoval=true)
+     */
+    private $rates;
+
+
+    public function __construct()
+    {
+        $this->rates = new ArrayCollection();
+    }
+
+
 
     public function getId(): ?int
     {
@@ -183,5 +199,21 @@ class User implements UserInterface
         $this->surname = $surname;
 
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRates()
+    {
+        return $this->rates;
+    }
+
+    /**
+     * @param mixed $rates
+     */
+    public function setRates($rates): void
+    {
+        $this->rates = $rates;
     }
 }

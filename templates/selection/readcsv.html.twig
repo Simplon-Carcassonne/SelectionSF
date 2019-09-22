@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Read CSV{% endblock %}
+
+
+{% block body %}
+    {% include 'headers/_jumbo.html.twig' with {jumboTitle:'Importer des données',jumboText:""} %}
+    <div class="container">
+
+        <div class = "row">
+            <div class="col">
+                <h1>Sélection {{ selection.title }}</h1>
+                <div class="alert alert-info" role="alert">
+                    Nombre d'inscrits: {{ datas| length }}<br/>
+                    <a class="btn btn-info" href="{{ path('saveCsv', {'id':selection.id}) }}" role="button">Sauver dans la base de données pour cette sélection</a>
+                </div>
+
+                {{ dump(datas) }}
+                {# dump(file) }}#}
+
+                {% for data in datas %}
+                    {#dump(data) }}#}
+                    <h4>Candidat : {{ data.NOM }} {{ data.Prénom }}</h4>
+                    {{ data.Email }} - Date Naissance => {{ data['Date de naissance'] }}
+
+                    <br><br>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block javascripts %}
+{% endblock %}

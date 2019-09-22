@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Selection;
+use App\Entity\Candidate;
 use App\Form\SelectionType;
+use App\Repository\CandidateRepository;
 use App\Repository\SelectionRepository;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,6 +13,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+
+
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Encoder\CsvEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+
+use Symfony\Component\Finder\Finder;
 
 /**
  * @IsGranted("ROLE_JURY", message="No access! Get out!")
@@ -58,14 +67,82 @@ class SelectionController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="selection_show", methods={"GET"})
+     * @Route("/{id}/{mode}", name="selection_show", methods={"GET"})
      */
-    public function show(Selection $selection): Response
+    public function show(Selection $selection, $mode = null, CandidateRepository $candidateRepo): Response
     {
-        return $this->render('selection/show.html.twig', [
-            'selection' => $selection,
-            'currentUser' => $this->getUser(),
-        ]);
+        if($mode == 'preselected'){
+            //get All Candidates for this selection
+            $candidates = $candidateRepo->getPreselectedCandidatesBySelectionAlphabetical($selection);
+        }
+        else if($mode == 'selected'){
+            $candidates = $candidateRepo->getSelectedCandidatesBySelectionAlphabetical($selection);
+        }
+        else{
+            //get All Candidates for this selection
+            $candidates = $candidateRepo->getCandidatesBySelectionAlphabetical($selection);
+        }
+
+
+        $hasAccess = $this->isGranted('ROLE_MASTER');
+        $isJury = $this->isGranted('ROLE_JURY');
+        if($isJury && !$hasAccess){
+            $status = $selection->getSelectionStatus() ;
+            if($status == Selection::STATE_FORM || $status == Selection::STATE_CLOSED || $status == Selection::STATE_ENDED || $status == ""){
+                $this->addFlash('danger', 'Cette sélection n\'est pas encore ouverte !');
+                return $this->redirectToRoute('selection_index');
+
+            }
+            else{
+                return $this->render('selection/show.html.twig', [
+                    'selection' => $selection,
+                    'currentUser' => $this->getUser(),
+                ]);
+            }
+        }
+        else{
+            return $this->render('selection/show.html.twig', [
+                'selection' => $selection,
+                'currentUser' => $this->getUser(),
+                'candidates'=>$candidates
+            ]);
+        }
+    }
+
+    /**
+     * @Route("/{id}/{nextStep}", name="selection_changeStatus", methods={"GET","POST"})
+     * @IsGranted("ROLE_MASTER", message="No access! Get out!")
+     */
+    public function changeSelectionStatus(ObjectManager $manager,Selection $selection, $nextStep = null):Response{
+
+        if($nextStep){
+            switch($nextStep){
+                case 'Fermée':
+                    $selection->setSelectionStatus(Selection::STATE_FORM);
+                    break;
+                case 'Formulaire ouvert':
+                    $selection->setSelectionStatus(Selection::STATE_PRESELECTION);
+                    break;
+                case 'Préselection':
+                    $selection->setSelectionStatus(Selection::STATE_SELECTION);
+                    break;
+                case 'Sélection':
+                    $selection->setSelectionStatus(Selection::STATE_ENDED);
+                    break;
+                default:
+                    $selection->setSelectionStatus(Selection::STATE_CLOSED);
+                    break;
+            }
+            $manager->persist($selection);
+            $manager->flush();
+
+            $this->addFlash('success', 'La sélection est maintenant : '.$nextStep);
+            return $this->redirectToRoute('selection_show',array('id'=>$selection->getId()));
+        }
+        else{
+            $this->addFlash('danger', 'ERROR : Pas de mode !');
+            return $this->redirectToRoute('selection_show');
+        }
     }
 
     /**
@@ -133,7 +210,117 @@ class SelectionController extends AbstractController
                 'code' => 200,
                 'message' => 'selection bien activée',
             ], 200);
+    }
+
+    /**
+     * @Route("/{id}/csv", name="readCsv")
+     * @IsGranted("ROLE_MASTER", message="No access! Get out!")
+     *
+     * @param Selection $selection
+     * @param SelectionRepository $repoSelection
+     * @return Response
+     */
+    public function readCSV(Selection $selection){
+
+        $datas = $this->getDatasFromCSV();
+
+        return $this->render('selection/readcsv.html.twig', [
+            'selection' => $selection,
+            'currentUser' => $this->getUser(),
+            'datas' => $datas,
+        ]);
+    }
+
+    /**
+     * @Route("/{id}/saveCsv", name="saveCsv")
+     * @IsGranted("ROLE_MASTER", message="No access! Get out!")
+     *
+     * @param ObjectManager $manager
+     * @param Selection $selection
+     * @param SelectionRepository $repoSelection
+     * @return Response
+     */
+    public function saveCandidateFromCSV(ObjectManager $manager, Selection $selection){
+
+        $datas = $this->getDatasFromCSV();
+
+        //save in bdd all these new candidates
+        $stopIndice = 0;
+        foreach ($datas as $data){
+            if($stopIndice < 2){
+                $candidate = new Candidate();
+                $candidate->hydrate($data,$selection);
+                $manager->persist($candidate);
+            }
+            else{
+                break;
+            }
+            $stopIndice++;
+        }
+        $manager->flush();
+
+        return $this->redirectToRoute('selection_index');
+    }
 
 
+    private function getDatasFromCSV($csvFileName = 'datas3'){
+
+        //https://symfony.com/blog/new-in-symfony-3-2-csv-and-yaml-encoders-for-serializer
+        //https://symfony.com/doc/current/components/serializer.html
+        //https://www.novaway.fr/blog/tech/comment-utiliser-le-serializer-symfony
+
+        $serializer = new Serializer([new ObjectNormalizer()], [new CsvEncoder()]);
+        $finder = new Finder();
+        $finder->files()->name('*.csv')->in('../public/csv');
+        // check if there are any search results
+        $fileToImport = null;
+        if ($finder->hasResults()) {
+            //$status = "OK";
+            /*foreach ($finder as $file) {
+                //$absoluteFilePath = $file->getRealPath();
+                //$fileNameWithExtension = $file->getRelativePathname();
+                $fileToImport  = $file;
+            }*/
+
+            // decoding CSV contents
+            //$datas = $serializer->decode(file_get_contents('../public/csv/datas3.csv'), 'csv');
+            $datas = $serializer->decode(file_get_contents('../public/csv/'.$csvFileName.'.csv'), 'csv');
+
+            $unikDatas = array(0);
+
+            //remove duplicate    ////$datas = array_unique($datas); error here for array to string conversion !!
+            foreach($datas as $data){
+                $email = $data['Email'];
+                //echo ' <br> email => '.$email;
+                $canAdd = false;
+                foreach($unikDatas as $dataRecord){
+                    if($email != $dataRecord['Email']){
+                        $canAdd = true;
+                    }
+                    else{
+                        $canAdd = false;
+                        break;
+                    }
+                }
+                if($canAdd){
+                    array_push($unikDatas, $data);
+                }
+            }
+            unset($unikDatas[0]);
+            return $unikDatas;
+
+            //Open the file.
+            /*$fileHandle = fopen("example.csv", "r");
+
+            //Loop through the CSV rows.
+            while (($row = fgetcsv($fileHandle, 0, ",")) !== FALSE) {
+                //Dump out the row for the sake of clarity.
+                var_dump($row);
+            }*/
+        }
+        else{
+            //$status = "KO";
+            return null;
+        }
     }
 }

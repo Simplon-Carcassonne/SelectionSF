@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Entity\Rate;
 use App\Entity\Selection;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query\Expr\Select;
@@ -14,23 +16,38 @@ use phpDocumentor\Reflection\Types\Array_;
  * @method Selection[]    findAll()
  * @method Selection[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class SelectionRepository extends ServiceEntityRepository
+class RateRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Selection::class);
+        parent::__construct($registry, Rate::class);
 
     }
 
-    public function findOneByStatus()
+    public function findOneBySelectionUserAndCandidate($selection,$user,$candidate)
     {
         return $this->createQueryBuilder('s')
-            ->andWhere('s.status = :val')
-            // the val is equal to the status.
-            ->setParameter('val', true)
-            // the val is equal to true.
+            ->andWhere('s.candidate = :candidate')
+            ->setParameter('candidate', $candidate)
+            ->andWhere('s.selection = :selection')
+            ->setParameter('selection', $selection)
+            ->andWhere('s.user = :user')
+            ->setParameter('user', $user)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function findAllBySelectionAndCandidate($selection,$candidate,$rateType)
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.candidate = :candidate')
+            ->setParameter('candidate', $candidate)
+            ->andWhere('s.selection = :selection')
+            ->setParameter('selection', $selection)
+            ->andWhere('s.rateType = :rateType')
+            ->setParameter('rateType', $rateType)
+            ->getQuery()
+            ->getResult();
     }
 
 

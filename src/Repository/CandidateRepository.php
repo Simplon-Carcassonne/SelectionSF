@@ -20,6 +20,39 @@ class CandidateRepository extends ServiceEntityRepository
         parent::__construct($registry, Candidate::class);
     }
 
+   /* public function findAll(){
+        return $this->findBy(array('selection' => $selection), array('name' => 'ASC'));
+    }*/
+
+    public function getCandidatesBySelectionAlphabetical($selection){
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.selection = :selection')
+            ->setParameter('selection', $selection)
+            ->orderBy('s.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+    public function getPreselectedCandidatesBySelectionAlphabetical($selection){
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.selection = :selection')
+            ->andWhere('s.status = 1')
+            ->setParameter('selection', $selection)
+            ->orderBy('s.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getSelectedCandidatesBySelectionAlphabetical($selection){
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.selection = :selection')
+            ->andWhere('s.status = 1')
+            ->andWhere('s.simplonien = 1')
+            ->setParameter('selection', $selection)
+            ->orderBy('s.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
 
 
     // /**
