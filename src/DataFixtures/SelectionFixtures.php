@@ -19,6 +19,7 @@ class SelectionFixtures extends Fixture
             $selection->setPostCode(11000+$i);
             $selection->setCity('Carcassonne');
             $selection->setStatus(false);
+            $selection->setSelectionStatus(Selection::STATE_CLOSED);
             $manager->persist($selection);
             $this->addReference('Selection'.'_'.$i, $selection);
 
