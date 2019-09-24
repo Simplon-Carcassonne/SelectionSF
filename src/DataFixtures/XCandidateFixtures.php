@@ -43,6 +43,7 @@ class XCandidateFixtures extends Fixture
             $candidate->setGuidanceSource('web');
             $candidate->setStatus(rand(0,1) == 1);
             $candidate->setSelection($this->getReference('Selection_'.$i));
+            $candidate->setSelectionStatus(Candidate::STATE_FORM);
             $manager->persist($candidate);
         }
         $manager->flush();
