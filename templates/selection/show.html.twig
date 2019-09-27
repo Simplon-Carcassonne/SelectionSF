@@ -28,7 +28,8 @@
                             {{ selection.address }} - {{ selection.postCode }} {{ selection.city }}
                             <br>
                             <strong>Statut:</strong> {{ selection.selectionStatus }}
-
+                            <br>
+                            <strong>Total inscrits en Présélection:</strong> {{ candidates|length }}
                             {% if is_granted('ROLE_MASTER') %}
                             <br><br>
                             {% set nextStep = 'default' %}
