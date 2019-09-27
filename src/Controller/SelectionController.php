@@ -226,17 +226,17 @@ class SelectionController extends AbstractController
             $manager->persist($selectionAll);
         }
         $selectionID = $repoSelection->findOneBy([
-                'id' => $selection
-            ]);
+            'id' => $selection
+        ]);
 
-            $selectionID->setStatus(true);
-            $manager->persist($selectionID);
-            $manager->flush();
+        $selectionID->setStatus(true);
+        $manager->persist($selectionID);
+        $manager->flush();
 
-            return $this->json([
-                'code' => 200,
-                'message' => 'selection bien activée',
-            ], 200);
+        return $this->json([
+            'code' => 200,
+            'message' => 'selection bien activée',
+        ], 200);
     }
 
     /**
@@ -259,7 +259,7 @@ class SelectionController extends AbstractController
     }
 
     /**
-     * @Route("/special/{id}", name="saveCsv")
+     * @Route("/special/saveCsv/{id}", name="saveCsv")
      * @IsGranted("ROLE_ADMIN", message="No access! Get out!")
      *
      * @param ObjectManager $manager
@@ -273,24 +273,35 @@ class SelectionController extends AbstractController
 
         //save in bdd all these new candidates
         $stopIndice = 0;
-        foreach ($datas as $data){
-            if($stopIndice < 2){
+        $debug = false;
+        if($debug){
+            foreach ($datas as $data){
+                if($stopIndice < 2){
+                    $candidate = new Candidate();
+                    $candidate->hydrate($data,$selection);
+                    $manager->persist($candidate);
+                }
+                else{
+                    break;
+                }
+                $stopIndice++;
+            }
+        }
+        else{
+            foreach ($datas as $data){
                 $candidate = new Candidate();
                 $candidate->hydrate($data,$selection);
                 $manager->persist($candidate);
             }
-            else{
-                break;
-            }
-            $stopIndice++;
         }
+
         $manager->flush();
 
         return $this->redirectToRoute('selection_index');
     }
 
 
-    private function getDatasFromCSV($csvFileName = 'datas3'){
+    private function getDatasFromCSV($csvFileName = 'datas3Final'){
 
         //https://symfony.com/blog/new-in-symfony-3-2-csv-and-yaml-encoders-for-serializer
         //https://symfony.com/doc/current/components/serializer.html

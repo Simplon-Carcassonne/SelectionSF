@@ -49,7 +49,7 @@ class Candidate
      */
     private $date_of_birth;
 
-        /**
+    /**
      * @Assert\NotBlank(message="Item 'pays de naissance' oublié à l'étape 1 !")
      * @ORM\Column(type="string", length=50)
      */
@@ -83,7 +83,7 @@ class Candidate
 
     /**
      * @Assert\NotBlank(message="Item 'numéro de téléphone' oublié à l'étape 2 !")
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string")
      */
     private $phone_number;
 
@@ -93,9 +93,9 @@ class Candidate
      */
     private $mail_address;
 
-        /**
+    /**
      * @Assert\NotBlank(message="Item 'année de décrochage' oublié à l'étape 3 !")
-     * @ORM\Column(type="string", length=4)
+     * @ORM\Column(type="string", length=255)
      */
     private $school_stopped_year;
 
@@ -130,19 +130,19 @@ class Candidate
     private $social_security;
 
 
-       /**
+    /**
      * @Assert\NotBlank(message="Item 'parcours' oublié à l'étape 4 !")
      * @ORM\Column(type="text")
      */
     private $resume;
 
-        /**
+    /**
      * @Assert\NotBlank(message="Item 'niveau de dév. web' oublié à l'étape 4 !")
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text", length=1000)
      */
     private $dev_skills;
 
-        /**
+    /**
      * @Assert\NotBlank(message="Item 'niveau d'anglais' oublié à l'étape 4 !")
      * @ORM\Column(type="string", length=255)
      */
@@ -150,11 +150,11 @@ class Candidate
 
     /**
      * @Assert\NotBlank(message="Item 'superhéro(ïne)' oublié à l'étape 4 !")
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text", length=255)
      */
     private $superhero;
 
-        /**
+    /**
      * @Assert\NotBlank(message="Item 'superpouvoirs' oublié à l'étape 4 !")
      * @ORM\Column(type="text")
      */
@@ -166,7 +166,7 @@ class Candidate
      */
     private $hack_experience;
 
-        /**
+    /**
      * @Assert\NotBlank(message="Item 'motivation' oublié à l'étape 5 !")
      * @ORM\Column(type="text")
      */
@@ -681,14 +681,24 @@ class Candidate
         $this->setCity($datas['Ville']);
         $this->setPostCode($datas['Code Postal ']);
 
-        $this->setPhoneNumber($datas['Numéro où l\'on peut vous joindre ']);
+        $phoneNumber = str_replace(' ', '', $datas['Numéro où l\'on peut vous joindre ']);
+        $phoneNumber = str_replace('|', '', $phoneNumber);
+        if(!is_numeric($phoneNumber)){
+            $phoneNumber = "TODO";
+        }
+        $phoneNumber= intval($phoneNumber);
+        $this->setPhoneNumber($phoneNumber);
         $this->setMailAddress($datas['Email']);
 
         $this->setSituation($datas['Statut au moment de votre candidature (plusieurs réponses possibles)']);
         $this->setPoleEmploiId($datas['Numéro Pôle Emploi']);
         $dateEndPE = new \DateTime($datas['Date de fin d\'indemnisation Pôle Emploi']); //TODO adjust format
         $this->setPoleEmploiCompensationEndDate($dateEndPE);
-        $this->setSocialSecurity($datas['Numéro de Sécurité Sociale']);
+        //have to well format in int
+        //'2 97 05 11 069 070 65'
+        $securityNumber = str_replace(' ', '', $datas['Numéro de Sécurité Sociale']);
+        $securityNumber = str_replace('|', '', $securityNumber);
+        $this->setSocialSecurity($securityNumber);
 
         $this->setDevSkills($datas['Avez vous déjà eu une expérience avec la programmation et/ou l\'informatique avant de remplir ce formulaire ?']);
         $this->setSuperhero($datas['Si vous étiez un super héros/une super héroïne, qui seriez-vous et pourquoi?']);
@@ -705,7 +715,7 @@ class Candidate
 
         $reponse = $datas['Dites nous pourquoi vous voulez intégrer l\'ERN Simplon Carcassonne'];
 
-        var_dump($datas['Dites nous pourquoi vous voulez intégrer l\'ERN Simplon Carcassonne']);//die();
+        //var_dump($datas['Dites nous pourquoi vous voulez intégrer l\'ERN Simplon Carcassonne']);//die();
 
         $reponse = $reponse[' Racontez-nous votre parcours et détaillez-nous votre motivation ci-dessous, en vous exprimant avec votre style à vous, mais ne vous limitez pas à un texte tapé à la va-vite'];
         $reponse = $reponse[' Aussi, n\'hésitez pas à faire une vidéo, un site ou tout autre chose qui démontrera votre envie, votre motivation, et vos compétences !'];

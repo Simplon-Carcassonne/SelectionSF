@@ -56,6 +56,9 @@ class CandidateController extends AbstractController
         //https://www.sololearn.com/Profile/12179285
         $id = $candidate->getSololearn();
         $id = substr($id, 34);
+        if(!is_numeric($id)){
+            $id = 4287114;
+        }
         $rawDatas = $parser->getPageContent($id);//unused ? ...just json is ok
 
         //echo ($rawDatas);die();
@@ -70,7 +73,7 @@ class CandidateController extends AbstractController
             //echo $course->XP; //1135 XP
             $xp = explode(" ", $course->XP);
             $totalXP += $xp[0];
-         }
+        }
 
         //TODO control if all rates have been given by all Users for this Selection
         $ratesCandidate = $raterepo ->findAllBySelectionAndCandidate($candidate->getSelection(),$candidate,Rate::TYPE_PRESELECTION);
@@ -173,7 +176,7 @@ class CandidateController extends AbstractController
         }
 
         return $this->redirectToRoute('candidate_index', [
-          'currentUser' => $this->getUser(),
+            'currentUser' => $this->getUser(),
         ]);
     }
 
