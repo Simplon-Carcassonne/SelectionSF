@@ -31,6 +31,7 @@
                             <br>
                             <strong>Total inscrits en Présélection:</strong> {{ candidates|length }}
                             {% if is_granted('ROLE_MASTER') %}
+                                <br>
                             <br><br>
                             {% set nextStep = 'default' %}
                             {% if selection.selectionStatus is same as ('Fermée') %}
