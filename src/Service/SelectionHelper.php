@@ -32,6 +32,29 @@ class SelectionHelper
 
     }
 
+    //https://thisinterestsme.com/php-calculate-age-date-of-birth/
+    public function calculateOld($candidateBirthDate){
+        $now = time();//$now = new \DateTime('Y-m-d H:i:s');
+        $dob = strtotime($candidateBirthDate->format('Y-m-d H:i:s'));
+        $difference = $now - $dob;
+
+        //There are 31556926 seconds in a year.
+        $age = floor($difference / 31556926);
+
+       return $age;
+    }
+
+    public function determineAvatar($sololeranLink){
+        $word = "https://api.sololearn.com/Uploads/Avatars/";
+        if(strpos($sololeranLink, $word) !== false){
+            //var_dump($sololeranLink);
+            return $sololeranLink;
+        } else{
+            //var_dump($sololeranLink);
+            return 'https://www.sololearn.com/Images/NoAvatar.jpg';
+        }
+    }
+
     //TODO method for get total rate for one candidate from ALL Jury  (for selection or preselection)
     public function getCandidateTotalRates($selection, $candidate,$rateType){
         $rates = $this->rateRepo->findAllBySelectionAndCandidate($selection,$candidate,$rateType);

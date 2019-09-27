@@ -5,13 +5,19 @@
 {% block body %}
 
     <div class="container">
-       <h1 class="ml-3 my-3 h1">Candidat.e : {{ candidate.surname }} {{ candidate.name }}</h1>
+        {% if candidate.genus is same as("F") %}
+            <h1 class="ml-3 my-3 h1">Candidate : {{ candidate.surname }} {{ candidate.name }}</h1>
+        {% else %}
+            <h1 class="ml-3 my-3 h1">Candidat : {{ candidate.surname }} {{ candidate.name }}</h1>
+        {% endif %}
             <a href="{{ path('selection_show', {'id': candidate.selection.id}) }}">
                 <button class="btn btn-info"><i class="fa fa-arrow-left"></i> Retour Selection</button>
             </a>
+             {% if is_granted('ROLE_MASTER') %}
             <a href="{{ path('candidate_index') }}">
                 <button class="btn btn-info"><i class="fa fa-arrow-left"></i> Retour TOUS Candidats</button>
             </a>
+             {% endif %}
             <form>
                 <input class="btn btn-secondary mb-3" type = "button" value = "<< Back"  onclick = "history.back()">
             </form>
@@ -34,7 +40,11 @@
                     </tr>
                     <tr>
                         <th>Date_de_naissance</th>
-                        <td>{{ candidate.dateOfBirth ? candidate.dateOfBirth|date('Y-m-d H:i:s') : '' }}</td>
+                        <td>{{ candidate.dateOfBirth ? candidate.dateOfBirth|date('Y-m-d H:i:s') : '' }} </td>
+                    </tr>
+                    <tr>
+                        <th>Age</th>
+                        <td>{{ candidateOld(candidate.dateOfBirth) }} ans</td>
                     </tr>
                     <tr>
                         <th>Adresse</th>
@@ -150,7 +160,7 @@
                             overflow: hidden;
                             display: inline-block;
                             vertical-align: top;">
-                    <img src="{{ datas.AVATAR }}" class="img-fluid rounded">
+                    <img src="{{ candidateAvatar(datas.AVATAR )}}" class="img-fluid rounded">
                 </div>
                 <div style="margin: 20px 0 0 20px;
                             color: #555;
@@ -173,7 +183,7 @@
                                 /*position: absolute;
                                 top: 5px;
                                 left: 5px;*/">
-                       <img src="{{ course.IconURL }}" class="img-fluid rounded">
+                       <img src="{{course.IconURL}}" class="img-fluid rounded">
                     </span><br>
                     <span style="font-size: 12px;
                                     margin: 5px 0 0 0;">

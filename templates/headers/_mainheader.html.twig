@@ -30,6 +30,7 @@
                         Sélections
                       </div>
                     </a>
+                    {% if is_granted('ROLE_ADMIN') %}
                     <a class="text-center icon my-3" href="{{ path('candidate_index') }}" title="Candidats">
                       <div class="justify-content-center">
                         <i class="fa fa-address-card fa-2x"></i>
@@ -38,7 +39,7 @@
                         Candidats
                       </div>
                     </a>
-                    {% if is_granted('ROLE_ADMIN') %}
+
                         <a class="text-center icon my-3" href="{{ path('user_index') }}" title="Utilisateurs">
                             <div class="justify-content-center">
                                 <i class="fa fa-users fa-2x"></i>

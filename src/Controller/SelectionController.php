@@ -74,7 +74,7 @@ class SelectionController extends AbstractController
     public function show(Selection $selection, $mode = null, CandidateRepository $candidateRepo, SelectionHelper $helper): Response
     {
         if($mode == 'preselected'){
-            //get All Candidates for this selection
+            //get All preselectedCandidates for this selection
             $candidates = $candidateRepo->getPreselectedCandidatesBySelectionAlphabetical($selection);
         }
         else if($mode == 'preselectedRate'){
@@ -97,6 +97,20 @@ class SelectionController extends AbstractController
                 return $a['total'] <=> $b['total'];
             });*/
 
+        }
+        else if($mode == 'rate'){
+            $candidatesunfilered = $candidateRepo->getCandidatesBySelectionAlphabetical($selection);
+
+            $candidates = $candidatesunfilered;
+            $indice = 0;
+            foreach($candidatesunfilered as $candidate){
+                $total = $helper->getCandidateTotalRates($selection, $candidate, Rate::TYPE_PRESELECTION);
+                $candidates[$indice]->total =  $total;
+                $indice++;
+            }
+            usort($candidates, function($a, $b) {
+                return $b->total <=> $a->total;
+            });
         }
         else if($mode == 'selected'){
             $candidates = $candidateRepo->getSelectedCandidatesBySelectionAlphabetical($selection);

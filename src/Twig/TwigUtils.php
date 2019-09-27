@@ -30,6 +30,8 @@ class TwigUtils extends AbstractExtension
             new TwigFunction('candidateMoyRates', [$this, 'getCandidateMoyRates']),
             new TwigFunction('totalMaxPoints', [$this, 'getTotalMaxPoints']),
             new TwigFunction('userRatedCandidate', [$this, 'hasUserRatedCandidate']),
+            new TwigFunction('candidateOld', [$this, 'calculateOld']),
+            new TwigFunction('candidateAvatar', [$this, 'determineAvatar']),
         ];
     }
 
@@ -58,5 +60,12 @@ class TwigUtils extends AbstractExtension
 
     public function hasUserRatedCandidate($selection, $candidate,$user,$rateType){
         return $this->helper->hasUserRatedCandidate($selection, $candidate,$user,$rateType);
+    }
+
+    public function calculateOld($candidateBirthDate){
+        return $this->helper->calculateOld($candidateBirthDate);
+    }
+    public function determineAvatar($sololeranLink){
+        return $this->helper->determineAvatar($sololeranLink);
     }
 }

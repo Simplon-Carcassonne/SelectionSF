@@ -68,15 +68,22 @@
             <a class="mr-2" href="{{ path('selection_show', {'id': selection.id}) }}">
                 <button class="btn btn-danger">Tous</button>
             </a>
-            <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'preselected'}) }}">
-                <button class="btn btn-warning">Préselectionnés.ées</button>
-            </a>
-            <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'preselectedRate'}) }}">
-                <button class="btn btn-warning">Classer Préselection</button>
-            </a>
-            <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'selected'}) }}">
-                <button class="btn btn-success">Sélectionnés.ées</button>
-            </a>
+            {% if selection.selectionStatus is same as('Préselection') %}
+                <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'rate'}) }}">
+                    <button class="btn btn-warning">Classer Par note</button>
+                </a>
+                <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'preselected'}) }}">
+                    <button class="btn btn-warning">Préselectionnés.ées</button>
+                </a>
+            {% endif %}
+            {% if selection.selectionStatus is same as('Sélection') %}
+                <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'preselectedRate'}) }}">
+                    <button class="btn btn-warning">Classer Préselection</button>
+                </a>
+                <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'selected'}) }}">
+                    <button class="btn btn-success">Sélectionnés.ées</button>
+                </a>
+            {% endif %}
         </div>
     {% else %}
         <div class="row justify-content-center text-center">
@@ -87,15 +94,23 @@
             <a class="mr-2" href="{{ path('selection_show', {'id': selection.id}) }}">
                 <button class="btn btn-danger">Tous</button>
             </a>
-            <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'preselected'}) }}">
-                <button class="btn btn-warning">Préselectionnés.ées</button>
-            </a>
-            <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'preselectedRate'}) }}">
-                <button class="btn btn-warning">Classer Préselection</button>
-            </a>
-            <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'selected'}) }}">
-                <button class="btn btn-success">Sélectionnés.ées</button>
-            </a>
+            {% if selection.selectionStatus is same as('Préselection') %}
+                <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'rate'}) }}">
+                    <button class="btn btn-warning">Classer Par note</button>
+                </a>
+                <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'preselected'}) }}">
+                    <button class="btn btn-warning">Préselectionnés.ées</button>
+                </a>
+            {% endif %}
+            {% if selection.selectionStatus is same as('Sélection') %}
+                <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'preselectedRate'}) }}">
+                    <button class="btn btn-warning">Classer Préselection</button>
+                </a>
+                <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'selected'}) }}">
+                    <button class="btn btn-success">Sélectionnés.ées</button>
+                </a>
+            {% endif %}
+
         </div>
     {% endif %}
             <table class="table mt-5 table-striped text-center">
