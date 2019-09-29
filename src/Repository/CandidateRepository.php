@@ -53,6 +53,36 @@ class CandidateRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function getWaitingCandidatesBySelectionAlphabetical($selection){
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.selection = :selection')
+            ->andWhere('s.selectionStatus = '.Candidate::STATE_SELECTION_WAITING.'')
+            ->setParameter('selection', $selection)
+            ->orderBy('s.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+    public function getDeniedCandidatesBySelectionAlphabetical($selection){
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.selection = :selection')
+            ->andWhere('s.selectionStatus = '.Candidate::STATE_SELECTION_KO.'')
+            ->setParameter('selection', $selection)
+            ->orderBy('s.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getCandidatesBySelectionAlphabeticalAndStatus($selection,$status){
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.selection = :selection')
+            ->andWhere('s.selectionStatus = :status')
+            ->setParameter('selection', $selection)
+            ->setParameter('status', $status)
+            ->orderBy('s.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
 
 
     // /**

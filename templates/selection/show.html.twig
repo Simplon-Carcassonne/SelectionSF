@@ -38,8 +38,17 @@
                                 {% set nextStep = 'Formulaire ouvert' %}
                             {% elseif selection.selectionStatus is same as ('Formulaire ouvert')%}
                                 {% set nextStep = 'Préselection' %}
+                                <a class="mr-2" href="{{ path('send_email', {'id': selection.id,'mode':'endForm'}) }}">
+                                    <button class="btn btn-warning">Envoyer Mail Candidature reçue !</button>
+                                </a>
                             {% elseif selection.selectionStatus is same as ('Préselection')%}
                                 {% set nextStep = 'Sélection' %}
+                                <a class="mr-2" href="{{ path('send_email', {'id': selection.id,'mode':'endForm'}) }}">
+                                    <button class="btn btn-warning">Envoyer Mail Candidature reçue !</button>
+                                </a>
+                                <a class="mr-2" href="{{ path('send_email', {'id': selection.id,'mode':'preselectedOK'}) }}">
+                                    <button class="btn btn-warning">Envoyer Mail Présélection OK !</button>
+                                </a>
                              {% elseif selection.selectionStatus is same as ('Sélection')%}
                                 {% set nextStep = 'Terminée' %}
                             {% endif %}
@@ -98,18 +107,27 @@
             </a>
             {% if selection.selectionStatus is same as('Préselection') %}
                 <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'rate'}) }}">
-                    <button class="btn btn-warning">Classer Par note</button>
+                    <button class="btn btn-warning">Classer par note</button>
                 </a>
                 <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'preselected'}) }}">
                     <button class="btn btn-warning">Préselectionnés.ées</button>
                 </a>
             {% endif %}
             {% if selection.selectionStatus is same as('Sélection') %}
-                <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'preselectedRate'}) }}">
-                    <button class="btn btn-warning">Classer Préselection</button>
+                <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'preselected'}) }}">
+                    <button class="btn btn-warning">Préselectionnés.ées</button>
+                </a>
+                <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'selectedRate'}) }}">
+                    <button class="btn btn-warning">Classer par note</button>
                 </a>
                 <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'selected'}) }}">
                     <button class="btn btn-success">Sélectionnés.ées</button>
+                </a>
+                <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'waiting'}) }}">
+                    <button class="btn btn-success">Liste d'attente</button>
+                </a>
+                <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'selectionDenied'}) }}">
+                    <button class="btn btn-success">Refusés.ées</button>
                 </a>
             {% endif %}
 

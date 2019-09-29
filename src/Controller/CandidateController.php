@@ -127,7 +127,7 @@ class CandidateController extends AbstractController
             return $this->redirectToRoute('candidate_show', array('id'=>$candidate->getId()));
         }*/
 
-        $form = $this->createForm(RateType::class, new Rate());
+        //$form = $this->createForm(RateType::class, new Rate());
 
         return $this->render('candidate/show.html.twig', [
             'candidate' => $candidate,

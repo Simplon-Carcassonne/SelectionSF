@@ -8,6 +8,7 @@ use App\Entity\Rate;
 use App\Form\SelectionType;
 use App\Repository\CandidateRepository;
 use App\Repository\SelectionRepository;
+use App\Service\MailManager;
 use App\Service\SelectionHelper;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -71,19 +72,24 @@ class SelectionController extends AbstractController
     /**
      * @Route("/{id}/{mode}", name="selection_show", methods={"GET"})
      */
-    public function show(Selection $selection, $mode = null, CandidateRepository $candidateRepo, SelectionHelper $helper): Response
+    public function show(
+        Selection $selection,
+        $mode = null,
+        CandidateRepository $candidateRepo,
+        SelectionHelper $helper): Response
     {
+        //get All preselected Candidates for this selection (Alphabetical order)
         if($mode == 'preselected'){
-            //get All preselectedCandidates for this selection
             $candidates = $candidateRepo->getPreselectedCandidatesBySelectionAlphabetical($selection);
         }
-        else if($mode == 'preselectedRate'){
+        //get All preselectedCandidates for this selection (Selected Rate order)... before selection choice ended
+        else if($mode == 'selectedRate'){
             $candidatesunfilered = $candidateRepo->getPreselectedCandidatesBySelectionAlphabetical($selection);
 
             $candidates = $candidatesunfilered;
             $indice = 0;
             foreach($candidatesunfilered as $candidate){
-                $total = $helper->getCandidateTotalRates($selection, $candidate, Rate::TYPE_PRESELECTION);
+                $total = $helper->getCandidateTotalRates($selection, $candidate, Rate::TYPE_SELECTION);
                 //$candidates[$indice]['total'] =  $total;
                 $candidates[$indice]->total =  $total;
                 $indice++;
@@ -98,6 +104,7 @@ class SelectionController extends AbstractController
             });*/
 
         }
+        //get all candidates for preselection (rate order) .. before preselection choice ended
         else if($mode == 'rate'){
             $candidatesunfilered = $candidateRepo->getCandidatesBySelectionAlphabetical($selection);
 
@@ -112,11 +119,20 @@ class SelectionController extends AbstractController
                 return $b->total <=> $a->total;
             });
         }
+        //get All selected Candidates for this selection (Alphabetical order)
         else if($mode == 'selected'){
             $candidates = $candidateRepo->getSelectedCandidatesBySelectionAlphabetical($selection);
         }
+        //get All waiting Candidates for this selection (Alphabetical order)
+        else if($mode == 'waiting'){
+            $candidates = $candidateRepo->getCandidatesBySelectionAlphabeticalAndStatus($selection,Candidate::STATE_SELECTION_WAITING);
+        }
+        //get All denied Candidates for this selection (Alphabetical order)
+        else if($mode == 'selectionDenied'){
+            $candidates = $candidateRepo->getDeniedCandidatesBySelectionAlphabetical($selection);
+        }
         else{
-            //get All Candidates for this selection
+            //get All Candidates for this preselection (Alphabetical order)
             $candidates = $candidateRepo->getCandidatesBySelectionAlphabetical($selection);
         }
 
@@ -134,7 +150,8 @@ class SelectionController extends AbstractController
                 return $this->render('selection/show.html.twig', [
                     'selection' => $selection,
                     'currentUser' => $this->getUser(),
-                    'candidates'=>$candidates
+                    'candidates'=>$candidates,
+                    'mode' => $mode,
                 ]);
             }
         }
@@ -142,10 +159,50 @@ class SelectionController extends AbstractController
             return $this->render('selection/show.html.twig', [
                 'selection' => $selection,
                 'currentUser' => $this->getUser(),
-                'candidates'=>$candidates
+                'candidates'=>$candidates,
+                'mode' => $mode,
             ]);
         }
     }
+
+    /**
+     * @Route("/{id}/sendEmail/{mode}", name="send_email", methods={"GET"})
+     *
+     * @IsGranted("ROLE_MASTER", message="No access! Get out!")
+     */
+    public function sendEmailConfirmation(
+        MailManager $mailer,
+        CandidateRepository $candidateRepo,
+        Selection $selection,
+        $mode = null
+    ){
+
+        //get All Candidates for this preselection (Alphabetical order)
+        $candidates = $candidateRepo->getCandidatesBySelectionAlphabetical($selection);
+        $toEmail = array();
+        foreach($candidates as $candidate){
+            $toEmail[] = $candidate->getMailAddress();
+        }
+        //prepare email params and details
+        $fromEmail = 'mafabrik2jeux@gmail.com';
+        if($mode == 'endForm'){
+            $title = 'Votre candidature est validée';
+            $emailTemplate = 'email/formEndedRegistrationConfirmation.html.twig';
+        }
+        else if($mode == 'preselectedOK'){
+            $title = 'Votre candidature est retenue en Sélection';
+            $emailTemplate = 'email/preselectedConfirmation.html.twig';
+        }
+        //var_dump($toEmail);die();
+        //Send email to all candidates
+        if ($mailer->sendEmail($title, $fromEmail, $toEmail, $emailTemplate,array(), true)) {
+            $this->addFlash('success', 'Email envoyé avec succès. Ce candidat est bien averti .');
+        } else {
+            $this->addFlash('danger', 'Une erreur est survenue .... veuillez réessayer !');
+        }
+        return $this->redirectToRoute('selection_show',array('id' =>$selection->getId()));
+    }
+
 
     /**
      * @Route("changeStatus/{id}/{nextStep}", name="selection_changeStatus", methods={"GET","POST"})

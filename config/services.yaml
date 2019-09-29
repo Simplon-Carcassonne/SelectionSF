@@ -5,6 +5,8 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
+    mx_email_domain: 'contact@eventorizon.studio'
+    cc_email_1: 'gwadaldesign@gmail.com'
 
 services:
     # default configuration for services in *this* file
@@ -26,3 +28,8 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Service\MailManager:
+        arguments:
+            $ccEmail1: '%cc_email_1%'
+            $mxEmailDomain: '%mx_email_domain%'
