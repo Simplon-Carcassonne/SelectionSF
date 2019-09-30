@@ -37,7 +37,9 @@ class MailManager
         $message = (new \Swift_Message($title))
             ->setSender( $this->mxEmailDomain)
             ->setFrom( $this->mxEmailDomain)
-            ->setTo($toEmail)
+            ->setTo($toEmail)  //emails are visible for all fo us
+
+            //->setTo($this->ccEmail1)
             //->setReplyTo($this->mxEmailDomain);
             ->setReplyTo('ataurisano.ext@simplon.co');
            /* ->setBody(
@@ -48,6 +50,8 @@ class MailManager
 
         if ($addCc)
             $message->setCc($this->ccEmail1);
+
+        //$message->setBcc($toEmail);
 
         //https://medium.com/@vanessaasse/symfony-afficher-une-image-dans-un-mail-avec-swiftmailer-45bc96bff63e
         //$img = $message->embed(\Swift_Image::fromPath('assets/pics/logoSimplon.png'));
