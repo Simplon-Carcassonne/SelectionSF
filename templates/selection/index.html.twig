@@ -59,15 +59,16 @@
                     <td>{{ selection.address }}<br>{{ selection.postCode }} {{ selection.city }}</td>
                     <td>{{ selection.selectionStatus }}</td>
                     <td>
-                        {% if selection.selectionStatus is not same as ("Préselection")%}
+                        {% if selection.selectionStatus is same as ("Préselection")%}
+                            <a href="{{ path('selection_show', {'id': selection.id}) }}"><button class="btn btn-success" ><i class="fa fa-eye"></i></button></a>
+                        {% elseif selection.selectionStatus is  same as ("Sélection") %}
+                            <a href="{{ path('selection_show', {'id': selection.id}) }}"><button class="btn btn-success" ><i class="fa fa-eye"></i></button></a>
+                        {% else %}
                             {%  if  is_granted('ROLE_MASTER') %}
                                 <a href="{{ path('selection_show', {'id': selection.id}) }}"><button class="btn btn-warning"><i class="fa fa-eye"></i></button></a>
                             {% else %}
                                 <a href="{{ path('selection_show', {'id': selection.id}) }}"><button class="btn btn-danger" ><i class="fa fa-eye"></i></button></a>
                             {% endif %}
-
-                        {% else %}
-                            <a href="{{ path('selection_show', {'id': selection.id}) }}"><button class="btn btn-success" ><i class="fa fa-eye"></i></button></a>
                         {% endif %}
 
 

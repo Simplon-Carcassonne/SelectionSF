@@ -41,14 +41,15 @@ class CandidateController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="candidate_show", methods={"GET","POST"})
+     * @Route("/{id}/show/{mode}", name="candidate_show", methods={"GET","POST"})
      */
     public function show(
         ObjectManager $manager,
         Request $request,
         Candidate $candidate,
         RateRepository $raterepo,
-        UserRepository $userRepo
+        UserRepository $userRepo,
+        $mode = 'preselection'
     ): Response
     {
         //TODO get SoloLearn Infos
@@ -76,7 +77,11 @@ class CandidateController extends AbstractController
         }
 
         //TODO control if all rates have been given by all Users for this Selection
-        $ratesCandidate = $raterepo ->findAllBySelectionAndCandidate($candidate->getSelection(),$candidate,Rate::TYPE_PRESELECTION);
+        if($mode == 'preselection')
+            $ratesCandidate = $raterepo ->findAllBySelectionAndCandidate($candidate->getSelection(),$candidate,Rate::TYPE_PRESELECTION);
+        else
+            $ratesCandidate = $raterepo ->findAllBySelectionAndCandidate($candidate->getSelection(),$candidate,Rate::TYPE_SELECTION);
+
         $ratesCount = count($ratesCandidate);
         $users = $userRepo->findAll();
         $usersCount = count($users) -1; //-1 for admin
@@ -91,7 +96,11 @@ class CandidateController extends AbstractController
 
 
         //TODO control if rate already given by this user to this candidate for this selection !!
-        $newRate = $raterepo ->findOneBySelectionUserAndCandidate($candidate->getSelection(),$this->getUser(),$candidate);
+        if($mode == 'preselection')
+            $newRate = $raterepo ->findOneBySelectionCandidateAndUser($candidate->getSelection(),$candidate,$this->getUser(),Rate::TYPE_PRESELECTION);
+        else
+            $newRate = $raterepo ->findOneBySelectionCandidateAndUser($candidate->getSelection(),$candidate,$this->getUser(),Rate::TYPE_SELECTION);
+
         $hasRated = false;
         if(!$newRate){
             $newRate = new Rate();
@@ -113,7 +122,7 @@ class CandidateController extends AbstractController
 
             if($candidate->getSelection()->getSelectionStatus() == Selection::STATE_PRESELECTION)
                 $newRate->setRateType(Rate::TYPE_PRESELECTION);
-            else if($candidate->getSelection()->getSelectionStatus() == Selection::STATE_PRESELECTION)
+            else if($candidate->getSelection()->getSelectionStatus() == Selection::STATE_SELECTION)
                 $newRate->setRateType(Rate::TYPE_SELECTION);
             else
                 $newRate->setRateType(Rate::TYPE_PRESELECTION);
@@ -123,11 +132,6 @@ class CandidateController extends AbstractController
             $this->addFlash('success', 'Ce candidat.e a été mis à jour');
             return $this->redirectToRoute('candidate_show', array('id'=>$candidate->getId()));
         }
-        /*else{
-            return $this->redirectToRoute('candidate_show', array('id'=>$candidate->getId()));
-        }*/
-
-        //$form = $this->createForm(RateType::class, new Rate());
 
         return $this->render('candidate/show.html.twig', [
             'candidate' => $candidate,
@@ -188,6 +192,8 @@ class CandidateController extends AbstractController
      * @param Candidate $candidate
      * @param CandidateRepository $candidateRepo
      * @return Response
+     *
+     * OBSOLETE !!
      */
     public function candidateStatus(ObjectManager $manager, Candidate $candidate, CandidateRepository $candidateRepo) :Response{
 
@@ -213,7 +219,7 @@ class CandidateController extends AbstractController
     }
 
     /**
-     * @Route("/admin/selection/preselection{id}", name="candidatePreselect")
+     * @Route("/admin/selection/candidateStatus/{id}/{mode}", name="candidateStatus")
      * @IsGranted("ROLE_MASTER", message="Raté ! ton role n'est pas fait pour aller ici.")
      *
      * @param ObjectManager $manager
@@ -221,10 +227,52 @@ class CandidateController extends AbstractController
      * @param CandidateRepository $candidateRepo
      * @return Response
      */
-    public function candidatePreselect(ObjectManager $manager, Candidate $candidate, CandidateRepository $candidateRepo) :Response{
-        $this->addFlash('success', 'Ce candidat.e a été présélectionné.ée !');
-        $candidate->setStatus('1');
-        $candidate->setSelectionStatus(Candidate::STATE_PRESELECTION);
+    public function candidateChangeStatus(
+        ObjectManager $manager,
+        Candidate $candidate,
+        CandidateRepository $candidateRepo,
+        $mode
+    ) :Response{
+        if($mode =='preselectionOK'){
+            $this->addFlash('success', 'Ce candidat.e a été présélectionné.ée !');
+            $candidate->setStatus('1');
+            $candidate->setSelectionStatus(Candidate::STATE_PRESELECTION);
+        }
+        else if($mode =='preselectionKO'){
+            $this->addFlash('success', 'Ce candidat.e a été refusé en présélection!');
+            $candidate->setStatus('0');
+            $candidate->setSelectionStatus(Candidate::STATE_PRESELECTION_KO);
+        }
+        else if($mode =='reset'){
+            $this->addFlash('warning', 'Ce candidat.e a été réinitialisé!');
+            $candidate->setStatus('0');
+            $candidate->setSelectionStatus(Candidate::STATE_FORM);
+        }
+        else if($mode =='resetSelection'){
+            $this->addFlash('warning', 'Ce candidat.e a été réinitialisé en Sélection!');
+            $candidate->setStatus('1');
+            $candidate->setSimplonien('0');
+            $candidate->setSelectionStatus(Candidate::STATE_PRESELECTION);
+        }
+        else if($mode =='selectionOK'){
+            $this->addFlash('success', 'Ce candidat.e a été accepté.e en Sélection!');
+            $candidate->setStatus('1');
+            $candidate->setSimplonien('1');
+            $candidate->setSelectionStatus(Candidate::STATE_SELECTION);
+        }
+        else if($mode =='selectionKO'){
+            $this->addFlash('danger', 'Ce candidat.e a été refusé.e en Sélection!');
+            $candidate->setStatus('1');
+            $candidate->setSimplonien('0');
+            $candidate->setSelectionStatus(Candidate::STATE_SELECTION_KO);
+        }
+        else if($mode =='selectionWaiting'){
+            $this->addFlash('warning', 'Ce candidat.e a été Placé.ée sur liste d\'attente!');
+            $candidate->setStatus('1');
+            $candidate->setSimplonien('0');
+            $candidate->setSelectionStatus(Candidate::STATE_SELECTION_WAITING);
+        }
+
         $manager->persist($candidate);
         $manager->flush();
 

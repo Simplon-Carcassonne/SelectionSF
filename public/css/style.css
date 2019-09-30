@@ -55,6 +55,12 @@ header {
 .green{
   color: green;
 }
+.gray{
+  color:gray;
+}
+.orange{
+  color:orange;
+}
 
 #icons {
   display: flex;

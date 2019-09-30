@@ -78,8 +78,12 @@ class SelectionController extends AbstractController
         CandidateRepository $candidateRepo,
         SelectionHelper $helper): Response
     {
+        //echo $mode;die();
         //get All preselected Candidates for this selection (Alphabetical order)
-        if($mode == 'preselected'){
+        if($mode == 'preselected' ||
+            ($selection->getSelectionStatus() == Selection::STATE_SELECTION
+                && ($mode != 'selectedRate' && $mode != 'selected' && $mode != 'waiting' && $mode != 'selectionDenied'))
+            ){
             $candidates = $candidateRepo->getPreselectedCandidatesBySelectionAlphabetical($selection);
         }
         //get All preselectedCandidates for this selection (Selected Rate order)... before selection choice ended
@@ -128,14 +132,15 @@ class SelectionController extends AbstractController
             $candidates = $candidateRepo->getCandidatesBySelectionAlphabeticalAndStatus($selection,Candidate::STATE_SELECTION_WAITING);
         }
         //get All denied Candidates for this selection (Alphabetical order)
-        else if($mode == 'selectionDenied'){
-            $candidates = $candidateRepo->getDeniedCandidatesBySelectionAlphabetical($selection);
+        else if($mode == 'selectionDenied'){//selectionDenied
+            $candidates = $candidateRepo->getCandidatesBySelectionAlphabeticalAndStatus($selection,Candidate::STATE_SELECTION_KO);
+
         }
         else{
             //get All Candidates for this preselection (Alphabetical order)
             $candidates = $candidateRepo->getCandidatesBySelectionAlphabetical($selection);
         }
-
+        //var_dump($candidates);die();die();
 
         $hasAccess = $this->isGranted('ROLE_MASTER');
         $isJury = $this->isGranted('ROLE_JURY');
@@ -177,21 +182,87 @@ class SelectionController extends AbstractController
         $mode = null
     ){
 
-        //get All Candidates for this preselection (Alphabetical order)
-        $candidates = $candidateRepo->getCandidatesBySelectionAlphabetical($selection);
-        $toEmail = array();
-        foreach($candidates as $candidate){
-            $toEmail[] = $candidate->getMailAddress();
-        }
         //prepare email params and details
         $fromEmail = 'mafabrik2jeux@gmail.com';
         if($mode == 'endForm'){
             $title = 'Votre candidature est validée';
             $emailTemplate = 'email/formEndedRegistrationConfirmation.html.twig';
+            //get All Candidates for this preselection (Alphabetical order)
+            $candidates = $candidateRepo->getCandidatesBySelectionAlphabetical($selection);
+            $toEmail = array();
+            foreach($candidates as $candidate){
+                $toEmail[] = $candidate->getMailAddress();
+            }
         }
         else if($mode == 'preselectedOK'){
             $title = 'Votre candidature est retenue en Sélection';
             $emailTemplate = 'email/preselectedConfirmation.html.twig';
+            //get All Candidates for this preselection (Alphabetical order)
+            $candidates = $candidateRepo->getCandidatesBySelectionAlphabeticalAndStatus($selection,Candidate::STATE_PRESELECTION);
+            $toEmail = array();
+            foreach($candidates as $candidate){
+                $toEmail[] = $candidate->getMailAddress();
+            }
+            if(count($candidates) == 0){
+                $this->addFlash('danger', 'Aucun candidat à avertir pour la présélection !');
+                return $this->redirectToRoute('selection_show',array('id' =>$selection->getId()));
+            }
+        }
+        else if($mode == 'preselectedKO'){
+            $title = 'Votre candidature n\'a pas été retenue';
+            $emailTemplate = 'email/preselectedDenied.html.twig';
+            //get All Candidates for this preselection (Alphabetical order)
+            $candidates = $candidateRepo->getCandidatesBySelectionAlphabeticalAndStatus($selection,Candidate::STATE_PRESELECTION_KO);
+            $toEmail = array();
+            foreach($candidates as $candidate){
+                $toEmail[] = $candidate->getMailAddress();
+            }
+            if(count($candidates) == 0){
+                $this->addFlash('danger', 'Aucun candidat refusé à avertir pour la présélection !');
+                return $this->redirectToRoute('selection_show',array('id' =>$selection->getId()));
+            }
+        }
+        else if($mode == 'selectedOK'){
+            $title = 'Vous êtes accepté en formation !!';
+            $emailTemplate = 'email/selectedOK.html.twig';
+            //get All Candidates for this preselection (Alphabetical order)
+            $candidates = $candidateRepo->getCandidatesBySelectionAlphabeticalAndStatus($selection,Candidate::STATE_SELECTION);
+            $toEmail = array();
+            foreach($candidates as $candidate){
+                $toEmail[] = $candidate->getMailAddress();
+            }
+            if(count($candidates) == 0){
+                $this->addFlash('danger', 'Aucun candidat accepté à avertir pour la Sélection !');
+                return $this->redirectToRoute('selection_show',array('id' =>$selection->getId()));
+            }
+        }
+        else if($mode == 'selectedKO'){
+            $title = 'Votre candidature n\'a pas été retenue';
+            $emailTemplate = 'email/selectedDenied.html.twig';
+            //get All Candidates for this preselection (Alphabetical order)
+            $candidates = $candidateRepo->getCandidatesBySelectionAlphabeticalAndStatus($selection,Candidate::STATE_SELECTION_KO);
+            $toEmail = array();
+            foreach($candidates as $candidate){
+                $toEmail[] = $candidate->getMailAddress();
+            }
+            if(count($candidates) == 0){
+                $this->addFlash('danger', 'Aucun candidat refusé à avertir pour la sélection !');
+                return $this->redirectToRoute('selection_show',array('id' =>$selection->getId()));
+            }
+        }
+        else if($mode == 'selectedWaiting'){
+            $title = 'Votre candidature est placée sur liste d\'attente';
+            $emailTemplate = 'email/selectedWaiting.html.twig';
+            //get All Candidates for this preselection (Alphabetical order)
+            $candidates = $candidateRepo->getCandidatesBySelectionAlphabeticalAndStatus($selection,Candidate::STATE_SELECTION_WAITING);
+            $toEmail = array();
+            foreach($candidates as $candidate){
+                $toEmail[] = $candidate->getMailAddress();
+            }
+            if(count($candidates) == 0){
+                $this->addFlash('danger', 'Aucun candidat en attente à avertir pour la sélection !');
+                return $this->redirectToRoute('selection_show',array('id' =>$selection->getId()));
+            }
         }
         //var_dump($toEmail);die();
         //Send email to all candidates

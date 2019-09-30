@@ -4,7 +4,6 @@
 
 {% block body %}
     {% include 'headers/_jumbo.html.twig' with {jumboTitle:'Sélection',jumboText:""} %}
-
     <div class="container-fluid">
         <div class="row align-items-center justify-content-center  my-3 py-3" data-aos-anchor-placement="top-center"
              data-aos="fade-down">
@@ -29,7 +28,7 @@
                             <br>
                             <strong>Statut:</strong> {{ selection.selectionStatus }}
                             <br>
-                            <strong>Total inscrits par formulaire:</strong> {{ candidates|length }}
+                            <strong>Total liste:</strong> {{ candidates|length }}
                             {% if is_granted('ROLE_MASTER') %}
                                 <br>
                             <br><br>
@@ -39,18 +38,27 @@
                             {% elseif selection.selectionStatus is same as ('Formulaire ouvert')%}
                                 {% set nextStep = 'Préselection' %}
                                 <a class="mr-2" href="{{ path('send_email', {'id': selection.id,'mode':'endForm'}) }}">
-                                    <button class="btn btn-warning">Envoyer Mail Candidature reçue !</button>
+                                    <button class="btn btn-success">Envoyer Mail Candidature reçue !</button>
                                 </a>
                             {% elseif selection.selectionStatus is same as ('Préselection')%}
                                 {% set nextStep = 'Sélection' %}
-                                <a class="mr-2" href="{{ path('send_email', {'id': selection.id,'mode':'endForm'}) }}">
-                                    <button class="btn btn-warning">Envoyer Mail Candidature reçue !</button>
-                                </a>
                                 <a class="mr-2" href="{{ path('send_email', {'id': selection.id,'mode':'preselectedOK'}) }}">
-                                    <button class="btn btn-warning">Envoyer Mail Présélection OK !</button>
+                                    <button class="btn btn-success">Envoyer Mail Présélection OK !</button>
+                                </a>
+                                <a class="mr-2" href="{{ path('send_email', {'id': selection.id,'mode':'preselectedKO'}) }}">
+                                    <button class="btn btn-danger">Envoyer Mail Présélection KO !</button>
                                 </a>
                              {% elseif selection.selectionStatus is same as ('Sélection')%}
                                 {% set nextStep = 'Terminée' %}
+                                 <a class="mr-2" href="{{ path('send_email', {'id': selection.id,'mode':'selectedOK'}) }}">
+                                     <button class="btn btn-success">Envoyer Mail Sélection OK !</button>
+                                 </a>
+                                 <a class="mr-2" href="{{ path('send_email', {'id': selection.id,'mode':'selectedWaiting'}) }}">
+                                     <button class="btn btn-warning">Envoyer Mail Liste attente  !</button>
+                                 </a>
+                                 <a class="mr-2" href="{{ path('send_email', {'id': selection.id,'mode':'selectedKO'}) }}">
+                                     <button class="btn btn-danger">Envoyer Mail Sélection KO !</button>
+                                 </a>
                             {% endif %}
                             <a href="{{ path('selection_changeStatus', {'id': selection.id, 'nextStep':nextStep}) }}">
                                 <button class="btn btn-info"> Passer en {{ nextStep }}</button>
@@ -102,9 +110,9 @@
                 <button class="btn btn-secondary"><i class="fa fa-arrow-left"></i></button>
              </a>
 
-            <a class="mr-2" href="{{ path('selection_show', {'id': selection.id}) }}">
+            <!--<a class="mr-2" href="{{ path('selection_show', {'id': selection.id}) }}">
                 <button class="btn btn-danger">Tous</button>
-            </a>
+            </a>-->
             {% if selection.selectionStatus is same as('Préselection') %}
                 <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'rate'}) }}">
                     <button class="btn btn-warning">Classer par note</button>
@@ -124,10 +132,10 @@
                     <button class="btn btn-success">Sélectionnés.ées</button>
                 </a>
                 <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'waiting'}) }}">
-                    <button class="btn btn-success">Liste d'attente</button>
+                    <button class="btn btn-warning">Liste d'attente</button>
                 </a>
                 <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'selectionDenied'}) }}">
-                    <button class="btn btn-success">Refusés.ées</button>
+                    <button class="btn btn-danger">Refusés.ées</button>
                 </a>
             {% endif %}
 
@@ -152,7 +160,8 @@
                 </thead>
                 <tbody>
                 {% for candidate in candidates %}    {# selection.candidates|sort #}
-                    {% if userRatedCandidate(candidate.selection, candidate, app.user, 'Préselection') is not same as (true)%}
+                    {% if userRatedCandidate(candidate.selection, candidate, app.user, 'Préselection') is not same as (true)
+                        or userRatedCandidate(candidate.selection, candidate, app.user, 'Sélection') is not same as (true)%}
                     <tr class="notRated">
                     {% else %}
                     <tr>
@@ -168,31 +177,75 @@
                         <td class="d-sm-table-cell"> {{ candidate.phoneNumber }}</td>
                         <td class="d-none d-sm-table-cell">{{ candidate.mailAddress }}</td>
                         <td class="d-none d-sm-table-cell">{{ candidate.nationality }}</td>
-                        {% if candidate.status == 1  %}
-                        <td class="d-none d-sm-table-cell green"><i class="fa fa-check"></i></td>
-                        {% else %}
-                            {% if userRatedCandidate(candidate.selection, candidate, app.user, 'Préselection') is not same as (true)%}
-                                <td class="d-none d-sm-table-cell"><i class="fa fa-times"></i></td>
-                            {% else %}
-                                <td class="d-none d-sm-table-cell red"><i class="fa fa-times"></i></td>
-                            {% endif %}
 
-                        {% endif %}
-                        {% if candidate.simplonien == 1  %}
-                            <td class="d-none d-sm-table-cell green"><i class="fa fa-check"></i></td>
+                    {% if candidate.selectionStatus is same as ('Form soumis')  %}
+                        <td class="d-none d-sm-table-cell gray"><i class="fa fa-question"></i></td>
+                    {% elseif candidate.selectionStatus is same as ('Préselection')  %}
+                        {% if userRatedCandidate(candidate.selection, candidate, app.user, 'Préselection') is not same as (true)%}
+                            <td class="d-none d-sm-table-cell gray"><i class="fa fa-check"></i></td>
                         {% else %}
-                            {% if userRatedCandidate(candidate.selection, candidate, app.user, 'Préselection') is not same as (true)%}
-                                <td class="d-none d-sm-table-cell"><i class="fa fa-times"></i></td>
-                            {% else %}
-                                <td class="d-none d-sm-table-cell red"><i class="fa fa-times"></i></td>
-                            {% endif %}
+                            <td class="d-none d-sm-table-cell green"><i class="fa fa-check"></i></td>
                         {% endif %}
+                    {% elseif candidate.selectionStatus is same as ('Préselection refusée') %}
+                        {% if userRatedCandidate(candidate.selection, candidate, app.user, 'Préselection') is not same as (true)%}
+                            <td class="d-none d-sm-table-cell gray"><i class="fa fa-times"></i></td>
+                        {% else %}
+                            <td class="d-none d-sm-table-cell red"><i class="fa fa-times"></i></td>
+                        {% endif %}
+                    {% elseif candidate.selectionStatus is same as ('Sélection') or
+                        candidate.selectionStatus is same as ('Sélection refusée') or
+                        candidate.selectionStatus is same as ('Liste d\'attente')%}
+                        {% if userRatedCandidate(candidate.selection, candidate, app.user, 'Sélection') is not same as (true)%}
+                            <td class="d-none d-sm-table-cell gray"><i class="fa fa-check"></i></td>
+                        {% else %}
+                            <td class="d-none d-sm-table-cell green"><i class="fa fa-check"></i></td>
+                        {% endif %}
+                    {% else %}
+                        <td class="d-none d-sm-table-cell gray"><i class="fa fa-question"></i></td>
+                    {% endif %}
+
+                    {% if candidate.selectionStatus is same as ('Sélection')  %}
+                        {% if userRatedCandidate(candidate.selection, candidate, app.user, 'Sélection') is not same as (true)%}
+                            <td class="d-none d-sm-table-cell gray"><i class="fa fa-check"></i></td>
+                        {% else %}
+                            <td class="d-none d-sm-table-cell green"><i class="fa fa-check"></i></td>
+                        {% endif %}
+                    {% elseif candidate.selectionStatus is same as ('Sélection refusée') %}
+                        {% if userRatedCandidate(candidate.selection, candidate, app.user, 'Sélection') is not same as (true)%}
+                            <td class="d-none d-sm-table-cell gray"><i class="fa fa-times"></i></td>
+                        {% else %}
+                            <td class="d-none d-sm-table-cell red"><i class="fa fa-times"></i></td>
+                        {% endif %}
+                    {% elseif candidate.selectionStatus is same as ("Liste d'attente") %}
+                        {% if userRatedCandidate(candidate.selection, candidate, app.user, 'Sélection') is not same as (true)%}
+                            <td class="d-none d-sm-table-cell gray"><i class="fa fa-exclamation-circle"></i></td>
+                        {% else %}
+                            <td class="d-none d-sm-table-cell orange"><i class="fa fa-exclamation-circle"></i></td>
+                        {% endif %}
+                    {% else %}
+                        <td class="d-none d-sm-table-cell gray"><i class="fa fa-question"></i></td>
+                    {% endif %}
+
+                    {% if  selection.selectionStatus is same as ('Préselection') %}
                         <td class="d-none d-sm-table-cell">{{ candidateTotalRates(candidate.selection, candidate, 'Préselection') }} /  {{ totalMaxPoints(candidate.selection) }}</td>
                         <td class="d-none d-sm-table-cell">{{ candidateMoyRates(candidate.selection, candidate, 'Préselection')|number_format(1, '.', ',') }}</td>
+
+                    {% elseif  selection.selectionStatus is same as ('Sélection')%}
+                        <td class="d-none d-sm-table-cell">{{ candidateTotalRates(candidate.selection, candidate, 'Sélection') }} /  {{ totalMaxPoints(candidate.selection) }}</td>
+                        <td class="d-none d-sm-table-cell">{{ candidateMoyRates(candidate.selection, candidate, 'Sélection')|number_format(1, '.', ',') }}</td>
+                     {% else %}
+                    {% endif %}
+
                         <td>
+                            {% if  selection.selectionStatus is same as ('Préselection') %}
                             <a href="{{ path('candidate_show', {'id': candidate.id}) }}">
                                 <button class="btn btn-success"><i class="fa fa-eye"></i></button>
                             </a>
+                            {% else %}
+                            <a href="{{ path('candidate_show', {'id': candidate.id,'mode':'selection'}) }}">
+                                <button class="btn btn-success"><i class="fa fa-eye"></i></button>
+                            </a>
+                            {% endif %}
                             {% if is_granted('ROLE_MASTER') %}
                             <a href="{{ path('candidate_edit', {'id': candidate.id}) }}">
                                 <button class="btn btn-warning"><i class="fa fa-pencil-square-o"></i></button>

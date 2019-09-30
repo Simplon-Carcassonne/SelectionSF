@@ -193,6 +193,10 @@
                 {% endfor %}
 
                     <hr><br><br>
+                {% if candidate.selectionStatus is same as ('Préselection')
+                    or candidate.selectionStatus is same as ('Form soumis')%}
+                    {#
+                    or candidate.selectionStatus is same as ('Sélection')#}
                 <h5>Evalution de 0 à 2</h5>
                 {{ form_start(form) }}
                 <form class="container-fluid">
@@ -220,9 +224,15 @@
                             {% if hasRated %}
                                 Votre note actuelle : {{ rateFromUser.value }}<br>
                                 Note totale : {{ candidateTotalRates(candidate.selection, candidate, 'Préselection') }} / {{ totalMaxPoints(candidate.selection) }}
+                               {% if candidate.selection.selectionStatus is same as ('Préselection') %}
                                 <a href="{{ path('candidate_show', {'id': candidate.id}) }}">
                                     <button class="btn btn-warning"><i class="fa fa-pencil-square-o"></i> {{ button_label|default('Changer Note') }}</button>
                                 </a>
+                               {% elseif candidate.selection.selectionStatus is same as ('Sélection')   %}
+                                <a href="{{ path('candidate_show', {'id': candidate.id,'mode':'selection'}) }}">
+                                   <button class="btn btn-warning"><i class="fa fa-pencil-square-o"></i> {{ button_label|default('Changer Note') }}</button>
+                                </a>
+                               {% endif %}
                             {% else %}
                                 Note actuelle : 0
                                 <div class="alert alert-warning" role="alert">
@@ -237,33 +247,132 @@
                 </form>
                 {{ form_end(form) }}
                 <hr><br><br>
-                <h5>Choix final</h5>
+                {% endif %}
+
+                <h5>Choix final Présélection</h5>
+                {%  if  candidate.selectionStatus is same as ('Préselection') %}
+                    <div class="alert alert-info" role="alert">
+                        Préselection OK
+                    </div>
+                {% elseif candidate.selectionStatus is same as ('Préselection refusée') %}
+                    <div class="alert alert-danger" role="alert">
+                        Préselection KO
+                    </div>
+                {% elseif candidate.selectionStatus is same as ('Sélection') or
+                    candidate.selectionStatus is same as ('Sélection refusée') or
+                    candidate.selectionStatus is same as ('Liste d\'attente')%}
+                    <div class="alert alert-success" role="alert">
+                        Préselection OK
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning" role="alert">
+                        Choix en cours...
+                    </div>
+                {% endif %}
+
+                {% if candidate.selection.selectionStatus is same as ('Sélection')%}
+                    <h5>Choix final Sélection</h5>
+                    {%  if  candidate.selectionStatus is same as ('Sélection') %}
+                        <div class="alert alert-info" role="alert">
+                            Sélection OK
+                        </div>
+                    {% elseif candidate.selectionStatus is same as ('Sélection refusée') %}
+                        <div class="alert alert-danger" role="alert">
+                            Sélection KO
+                        </div>
+                    {% elseif candidate.selectionStatus is same as ('Liste d\'attente') %}
+                        <div class="alert alert-warning" role="alert">
+                            Liste d'attente
+                        </div>
+                    {% elseif candidate.selectionStatus is same as ('Préselection refusée') %}
+                        <div class="alert alert-warning" role="alert">
+                            Pas de suite en Sélection
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning" role="alert">
+                            Choix en cours...
+                        </div>
+                    {% endif %}
+                {% else %}
+                {% endif %}
+
                 {% if is_granted('ROLE_MASTER') %}
-                     {% if isRatesOK %}
-                         <div class="alert alert-success" role="alert">
-                             Toutes les notes ont été données
-                         </div>
-                         {% if candidate.status is same as (false) %}
-                         <a href="{{ path('candidatePreselect', {'id': candidate.id}) }}">
-                             <button class="btn btn-success m-3"><i class="fa fa-check"></i> Passer en Sélection finale</button>
-                         </a>
-                         {% else %}
-                         {% endif %}
-                     {% else %}
-                         <div class="alert alert-warning" role="alert">
-                             {% if hasRated %}
-                                 En attente des notes des autres membres du Jury...
-                             {% else %}
-                                 En attente des notes des autres membres du Jury...dont la votre.
-                             {%  endif %}
-                         </div>
-                     {% endif %}
+                    {%  if  candidate.selectionStatus is same as ('Form soumis') %}
+                        <h5>Quel est le choix du Jury ?</h5>
+                        {% if isRatesOK %}
+                            <div class="alert alert-success" role="alert">
+                                Toutes les notes ont été données
+                            </div>
+                             <a href="{{ path('candidateStatus', {'id': candidate.id,'mode':'preselectionOK'}) }}">
+                                 <button class="btn btn-success m-3"><i class="fa fa-check"></i> Passer en Sélection</button>
+                             </a>
+                            <a href="{{ path('candidateStatus', {'id': candidate.id,'mode':'preselectionKO'}) }}">
+                                <button class="btn btn-danger m-3"><i class="fa fa-times"></i> Refuser en Sélection</button>
+                            </a>
+                        {% else %}
+                            <div class="alert alert-warning" role="alert">
+                                {% if hasRated %}
+                                    En attente des notes des autres membres du Jury...
+                                {% else %}
+                                    En attente des notes des autres membres du Jury...dont la votre.
+                                {%  endif %}
+                            </div>
+                        {% endif %}
+                    {% elseif candidate.selectionStatus is same as ('Préselection')  and  candidate.selection.selectionStatus is not same as ('Sélection')%}
+                        <a href="{{ path('candidateStatus', {'id': candidate.id,'mode':'reset'}) }}">
+                            <button class="btn btn-warning m-3"><i class="fa fa-times"></i> Reset</button>
+                        </a>
+                    {% elseif candidate.selectionStatus is same as ('Préselection refusée') and  candidate.selection.selectionStatus is not same as ('Sélection')%}
+                        <a href="{{ path('candidateStatus', {'id': candidate.id,'mode':'reset'}) }}">
+                            <button class="btn btn-warning m-3"><i class="fa fa-times"></i> Reset</button>
+                        </a>
+                    {% endif %}
+
+                    {% if candidate.selection.selectionStatus is same as ('Sélection')
+                        and  candidate.selectionStatus is not same as ('Préselection refusée')
+                        %}  {#and  candidate.selectionStatus is not same as ('Sélection refusée')#}
+                        {% if  candidate.selectionStatus is same as ('Préselection') %}
+                            <h5>Quel est le choix du Jury ?</h5>
+                            {% if isRatesOK %}
+                                <div class="alert alert-success" role="alert">
+                                    Toutes les notes ont été données
+                                </div>
+                                <a href="{{ path('candidateStatus', {'id': candidate.id,'mode':'selectionOK'}) }}">
+                                    <button class="btn btn-success m-3"><i class="fa fa-check"></i> Selectionner ce candidat.e</button>
+                                </a>
+                                <a href="{{ path('candidateStatus', {'id': candidate.id,'mode':'selectionWaiting'}) }}">
+                                    <button class="btn btn-warning m-3"><i class="fa fa-check"></i> Mettre sur liste d'attente</button>
+                                </a>
+                                <a href="{{ path('candidateStatus', {'id': candidate.id,'mode':'selectionKO'}) }}">
+                                    <button class="btn btn-danger m-3"><i class="fa fa-times"></i> Refuser en Formation</button>
+                                </a>
+                            {% else %}
+                                <div class="alert alert-warning" role="alert">
+                                    {% if hasRated %}
+                                        En attente des notes des autres membres du Jury...
+                                    {% else %}
+                                        En attente des notes des autres membres du Jury...dont la votre.
+                                    {%  endif %}
+                                </div>
+                            {% endif %}
+                        {% endif %}
+
+                        <a href="{{ path('candidateStatus', {'id': candidate.id,'mode':'resetSelection'}) }}">
+                            <button class="btn btn-warning m-3"><i class="fa fa-times"></i> Reset vers PrésélectionOK</button>
+                        </a>
+                    {% else %}
+                    {% endif %}
+
                 {% else %}
                     {% if isRatesOK %}
+                        {% if candidate.selectionStatus is same as ('Form soumis')
+                            or candidate.selectionStatus is same as ('Préselection')%}
                         <div class="alert alert-success" role="alert">
                             Toutes les notes ont été données
                         </div>
-                    {% else %}
+                        {% endif %}
+                    {% elseif candidate.selectionStatus is same as ('Préselection')
+                        or candidate.selectionStatus is same as ('Form soumis')%}
                         <div class="alert alert-warning" role="alert">
                             {% if hasRated %}
                                 En attente des notes des autres membres du Jury...
@@ -274,28 +383,6 @@
                     {% endif %}
                 {% endif %}
                 <br>
-                {% if candidate.selection.selectionStatus is same as ('Préselection')%}
-                    {%  if  candidate.status %}
-                    <div class="alert alert-info" role="alert">
-                        Préselection OK
-                    </div>
-                    {% else %}
-                     <div class="alert alert-danger" role="alert">
-                        Préselection KO
-                      </div>
-                    {% endif %}
-                {% elseif  candidate.selection.selectionStatus is same as ('Sélection') %}
-                    {%  if  candidate.selectionStatus is same as ('Préselection') %}
-                        <div class="alert alert-info" role="alert">
-                            Sélection OK
-                        </div>
-                    {% else %}
-                        <div class="alert alert-danger" role="alert">
-                            Sélection KO
-                        </div>
-                    {% endif %}
-                {% else %}
-                {% endif %}
             </div>
             <div class="mb-5 row">
                 <a href="{{ path('selection_show', {'id': candidate.selection.id}) }}">
