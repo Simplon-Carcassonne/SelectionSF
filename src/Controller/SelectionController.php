@@ -24,8 +24,6 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 use Symfony\Component\Finder\Finder;
 
-use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
-
 // Include Dompdf required namespaces
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -306,37 +304,9 @@ class SelectionController extends AbstractController
      *
      * @IsGranted("ROLE_MASTER", message="No access! Get out!")
      */
-    public function pdfAction(Selection $selection,string $mode,\Knp\Snappy\Pdf $snappy, CandidateRepository $candidateRepo) //\Knp\Snappy\Pdf $knpSnappy
+    public function pdfAction(Selection $selection,string $mode,CandidateRepository $candidateRepo) //\Knp\Snappy\Pdf $knpSnappy
     {
-        /*$aff = $repo->devisAffaire(['id' => $affaireId]);
-        $document = $this->renderView(
-            'default/mypdf.html.twig',
-            [
-                'ligne_devis' => $aff,
-            ]
 
-        );*/
-
-        $html='<h1>Bill</h1><p>You owe me money, dude.</p>';
-        //$pdf = new \Knp\Snappy\Pdf(__DIR__ . '/vendor/bin/wkhtmltopdf-amd64');
-        //$pdf = new \Knp\Snappy\Pdf('../vendor/bin/wkhtmltopdf-amd64');
-
-        //$pdf = new \Knp\Snappy\Pdf($_ENV['WKHTMLTOPDF_PATH']);
-
-        //$pdf->generateFromHtml($html, '/tmp/out/test.pdf', ['header-html' => '', 'footer-html' => ''], true);
-
-       /* return new PdfResponse(
-            $snappy->generateFromHtml($html,'file.pdf')
-        );*/
-
-        $filename = 'SnappyPDF';
-        $url = 'https://cloudways.com';
-
-        /*return new Response($snappy->getOutput($url),200, array(
-                'Content-Type'          => 'application/pdf',
-                'Content-Disposition'   => 'inline; filename="'.$filename.'.pdf"'
-            )
-        );*/
 
         if($mode =='preselected'){
             $candidates = $candidateRepo->getPreselectedCandidatesBySelectionAlphabetical($selection);
