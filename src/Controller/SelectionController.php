@@ -24,6 +24,12 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 use Symfony\Component\Finder\Finder;
 
+use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
+
+// Include Dompdf required namespaces
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
 /**
  * @IsGranted("ROLE_JURY", message="No access! Get out!")
  * @Route("/admin/selection")
@@ -274,6 +280,103 @@ class SelectionController extends AbstractController
         return $this->redirectToRoute('selection_show',array('id' =>$selection->getId()));
     }
 
+    /**
+     * @Route("/{id}/previewGeneratePdf/{mode}", name="preview_pdf", methods={"GET"})
+     *
+     * @IsGranted("ROLE_MASTER", message="No access! Get out!")
+     */
+    public function showPDF(Selection $selection, string $mode, CandidateRepository $candidateRepo){
+
+        if($mode =='preselected'){
+            $candidates = $candidateRepo->getPreselectedCandidatesBySelectionAlphabetical($selection);
+        }
+        else{
+            $candidates = $candidateRepo->getSelectedCandidatesBySelectionAlphabetical($selection);
+        }
+        return $this->render('pdf/preselectedFinalView.html.twig', [
+            'selection' => $selection,
+            'currentUser' => $this->getUser(),
+            'candidates' => $candidates,
+            'preview' => true
+        ]);
+    }
+
+    /**
+     * @Route("/{id}/generatePdf/{mode}", name="generate_pdf", methods={"GET"})
+     *
+     * @IsGranted("ROLE_MASTER", message="No access! Get out!")
+     */
+    public function pdfAction(Selection $selection,string $mode,\Knp\Snappy\Pdf $snappy, CandidateRepository $candidateRepo) //\Knp\Snappy\Pdf $knpSnappy
+    {
+        /*$aff = $repo->devisAffaire(['id' => $affaireId]);
+        $document = $this->renderView(
+            'default/mypdf.html.twig',
+            [
+                'ligne_devis' => $aff,
+            ]
+
+        );*/
+
+        $html='<h1>Bill</h1><p>You owe me money, dude.</p>';
+        //$pdf = new \Knp\Snappy\Pdf(__DIR__ . '/vendor/bin/wkhtmltopdf-amd64');
+        //$pdf = new \Knp\Snappy\Pdf('../vendor/bin/wkhtmltopdf-amd64');
+
+        //$pdf = new \Knp\Snappy\Pdf($_ENV['WKHTMLTOPDF_PATH']);
+
+        //$pdf->generateFromHtml($html, '/tmp/out/test.pdf', ['header-html' => '', 'footer-html' => ''], true);
+
+       /* return new PdfResponse(
+            $snappy->generateFromHtml($html,'file.pdf')
+        );*/
+
+        $filename = 'SnappyPDF';
+        $url = 'https://cloudways.com';
+
+        /*return new Response($snappy->getOutput($url),200, array(
+                'Content-Type'          => 'application/pdf',
+                'Content-Disposition'   => 'inline; filename="'.$filename.'.pdf"'
+            )
+        );*/
+
+        if($mode =='preselected'){
+            $candidates = $candidateRepo->getPreselectedCandidatesBySelectionAlphabetical($selection);
+            $pdfName = 'preselection-carcassonne-3.pdf';
+        }
+        else{
+            $candidates = $candidateRepo->getSelectedCandidatesBySelectionAlphabetical($selection);
+            $pdfName = 'selection-carcassonne-3.pdf';
+        }
+
+        // Configure Dompdf according to your needs
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+
+        // Instantiate Dompdf with our options
+        $dompdf = new Dompdf($pdfOptions);
+
+        // Retrieve the HTML generated in our twig file
+        $html = $this->renderView('pdf/mypdf.html.twig', [
+            'title' => "Welcome to our PDF Test",
+            'candidates'=>$candidates,
+            'currentUser' => $this->getUser(),
+            'selection' => $selection,
+            'preview' => false
+        ]);
+
+        // Load HTML to Dompdf
+        $dompdf->loadHtml($html);
+
+        // (Optional) Setup the paper size and orientation 'portrait' or 'portrait'
+        $dompdf->setPaper('A4', 'landscape');
+
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Output the generated PDF to Browser (force download)
+        $dompdf->stream($pdfName, [
+            "Attachment" => true
+        ]);
+    }
 
     /**
      * @Route("changeStatus/{id}/{nextStep}", name="selection_changeStatus", methods={"GET","POST"})

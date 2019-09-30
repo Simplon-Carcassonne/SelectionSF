@@ -48,6 +48,11 @@
                                 <a class="mr-2" href="{{ path('send_email', {'id': selection.id,'mode':'preselectedKO'}) }}">
                                     <button class="btn btn-danger">Envoyer Mail Présélection KO !</button>
                                 </a>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <a href="{{ path('preview_pdf', {'id': selection.id, 'mode':'preselected'}) }}">
+                                        <button class="btn btn-info">PDF Preview</button>
+                                    </a>
+                                {% endif %}
                              {% elseif selection.selectionStatus is same as ('Sélection')%}
                                 {% set nextStep = 'Terminée' %}
                                  <a class="mr-2" href="{{ path('send_email', {'id': selection.id,'mode':'selectedOK'}) }}">
@@ -59,9 +64,14 @@
                                  <a class="mr-2" href="{{ path('send_email', {'id': selection.id,'mode':'selectedKO'}) }}">
                                      <button class="btn btn-danger">Envoyer Mail Sélection KO !</button>
                                  </a>
+                                 {% if is_granted('ROLE_ADMIN') %}
+                                     <a href="{{ path('preview_pdf', {'id': selection.id, 'mode':'selected'}) }}">
+                                         <button class="btn btn-info">PDF Preview</button>
+                                     </a>
+                                 {% endif %}
                             {% endif %}
                             <a href="{{ path('selection_changeStatus', {'id': selection.id, 'nextStep':nextStep}) }}">
-                                <button class="btn btn-info"> Passer en {{ nextStep }}</button>
+                               <button class="btn btn-info"> Passer en {{ nextStep }}</button>
                             </a>
                             {% else %}
                             {% endif %}

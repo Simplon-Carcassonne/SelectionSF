@@ -1,0 +1,56 @@
+{% extends 'pdfbase.html.twig' %}
+
+{% block title %}
+    {% if selection.selectionStatus is same as ('Préselection')%}
+        Sélection
+    {% elseif selection.selectionStatus is same as ('Sélection')%}
+        Formation
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row mt-5">
+            <div class="col">
+                {% if selection.selectionStatus is same as ('Préselection')%}
+                    <h1 class="text-center mt-10">Candidats en Sélection</h1>
+                {% elseif selection.selectionStatus is same as ('Sélection')%}
+                    <h1 class="text-center mt-10">Candidats en Formation</h1>
+                {% endif %}
+                <br>
+                <h2 class="mt-10">{{ selection.title }}</h2>
+                <table class="table mt-5 table-striped text-center">
+                    <thead>
+                    <tr>
+                        <th class="d-sm-table-cell">Nom</th>
+                        <th class="d-sm-table-cell">Prénom</th>
+                        <th class="d-none d-sm-table-cell">Date_de_naissance</th>
+                        <th class="d-sm-table-cell">Téléphone</th>
+                        <th class="d-none d-sm-table-cell">Adresse_email</th>
+                        <th class="d-sm-table-cell">Signature</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for candidate in candidates %}
+                        <tr>
+                            <td class="d-sm-table-cell">{{ candidate.name }}</td>
+                            <td class="d-sm-table-cell">{{ candidate.surname }}</td>
+                            <td class="d-none d-sm-table-cell">{{ candidate.dateOfBirth ? candidate.dateOfBirth|date('d-m-Y') : '' }}</td>
+                            <td class="d-sm-table-cell"> {{ candidate.phoneNumber }}</td>
+                            <td class="d-none d-sm-table-cell">{{ candidate.mailAddress }}</td>
+                            <td class="d-none d-sm-table-cell"></td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="32">Aucun candidats trouvé</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}
