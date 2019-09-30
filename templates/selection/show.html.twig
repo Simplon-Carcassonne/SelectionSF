@@ -109,11 +109,10 @@
             <a class="mr-2" href="{{ path('selection_index') }}">
                 <button class="btn btn-secondary"><i class="fa fa-arrow-left"></i></button>
              </a>
-
-            <!--<a class="mr-2" href="{{ path('selection_show', {'id': selection.id}) }}">
-                <button class="btn btn-danger">Tous</button>
-            </a>-->
             {% if selection.selectionStatus is same as('Préselection') %}
+                <a class="mr-2" href="{{ path('selection_show', {'id': selection.id}) }}">
+                    <button class="btn btn-danger">Tous</button>
+                </a>
                 <a class="mr-2" href="{{ path('selection_show', {'id': selection.id,'mode':'rate'}) }}">
                     <button class="btn btn-warning">Classer par note</button>
                 </a>
@@ -161,7 +160,10 @@
                 <tbody>
                 {% for candidate in candidates %}    {# selection.candidates|sort #}
                     {% if userRatedCandidate(candidate.selection, candidate, app.user, 'Préselection') is not same as (true)
-                        or userRatedCandidate(candidate.selection, candidate, app.user, 'Sélection') is not same as (true)%}
+                       and candidate.selection.selectionStatus is same as ('Préselection')%}
+                    <tr class="notRated">
+                    {%  elseif userRatedCandidate(candidate.selection, candidate, app.user, 'Séléction') is not same as (true)
+                       and candidate.selection.selectionStatus is same as ('Sélection')%}
                     <tr class="notRated">
                     {% else %}
                     <tr>
