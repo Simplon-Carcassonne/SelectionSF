@@ -183,7 +183,7 @@
                       {% else %}
                       <td class="d-none d-sm-table-cell"><i class="fa fa-male"></i></td>
                       {% endif %}
-                        <td class="d-sm-table-cell">{{ candidate.name }}</td>
+                        <td class="d-sm-table-cell">{{ candidate.name|upper}}</td>
                         <td class="d-sm-table-cell">{{ candidate.surname }}</td>
                         <td class="d-none d-sm-table-cell">{{ candidate.dateOfBirth ? candidate.dateOfBirth|date('d-m-Y') : '' }}</td>
                         <td class="d-sm-table-cell"> {{ candidate.phoneNumber }}</td>

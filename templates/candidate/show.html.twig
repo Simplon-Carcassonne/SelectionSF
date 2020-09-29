@@ -32,7 +32,7 @@
                     </tr>
                     <tr>
                         <th>Nom</th>
-                        <td>{{ candidate.name }}</td>
+                        <td>{{ candidate.name|upper }}</td>
                     </tr>
                     <tr>
                         <th>Prénom</th>
@@ -223,12 +223,14 @@
                             {{ form_widget(form) }}
                             {% if hasRated %}
                                 Votre note actuelle : {{ rateFromUser.value }}<br>
-                                Note totale : {{ candidateTotalRates(candidate.selection, candidate, 'Préselection') }} / {{ totalMaxPoints(candidate.selection) }}
+
                                {% if candidate.selection.selectionStatus is same as ('Préselection') %}
+                                   Note totale : {{ candidateTotalRates(candidate.selection, candidate, 'Préselection') }} / {{ totalMaxPoints(candidate.selection) }}
                                 <a href="{{ path('candidate_show', {'id': candidate.id}) }}">
                                     <button class="btn btn-warning"><i class="fa fa-pencil-square-o"></i> {{ button_label|default('Changer Note') }}</button>
                                 </a>
                                {% elseif candidate.selection.selectionStatus is same as ('Sélection')   %}
+                                   Note totale : {{ candidateTotalRates(candidate.selection, candidate, 'Séléction') }} / {{ totalMaxPoints(candidate.selection) }}
                                 <a href="{{ path('candidate_show', {'id': candidate.id,'mode':'selection'}) }}">
                                    <button class="btn btn-warning"><i class="fa fa-pencil-square-o"></i> {{ button_label|default('Changer Note') }}</button>
                                 </a>

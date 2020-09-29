@@ -74,6 +74,9 @@ class Selection
      */
     public function getSelectionStatus()
     {
+        if($this->status == null){
+            $this->status = self::STATE_FORM;
+        }
         return $this->selectionStatus;
     }
 
