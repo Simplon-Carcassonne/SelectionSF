@@ -58,7 +58,8 @@ class SelectionController extends AbstractController
 
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $selection->setStatus(Selection::STATE_FORM);
+            $selection->setStatus(false);
+            $selection->setSelectionStatus(Selection::STATE_FORM);
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($selection);
             $entityManager->flush();
